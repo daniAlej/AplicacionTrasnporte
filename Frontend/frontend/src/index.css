@@ -1,0 +1,95 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topnav {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: #111;
+}
+
+.topnav a {
+  color: #ddd;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.topnav a.active {
+  background: #2563eb;
+  color: white;
+}
+
+
+.container {
+  padding: 16px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.table th,
+.table td {
+  border: 1px solid #e5e7eb;
+  padding: 8px;
+  text-align: left;
+}
+
+
+.map-wrap {
+  height: calc(100vh - 56px);
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+.controls {
+  
+  top: 12px;
+  left: 12px;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
+  z-index: 1000;
+}
+
+.controls h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.controls label {
+  display: block;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+.controls input,
+.controls select {
+  width: 220px;
+  padding: 6px;
+  margin-top: 4px;
+}
+
+.controls button {
+  margin-top: 10px;
+  padding: 6px 10px;
+}
