@@ -4,6 +4,16 @@ import UsuarioFactory from './Usuario.js';
 import RutaFactory from './Ruta.js';
 import RutaCoordFactory from './RutaCoord.js';
 import ParadaFactory from './Parada.js';
+import ConductorFactory from './Conductor.js';
+import UnidadFactory from './Unidad.js';
+import AdminFactory from './Administrador.js';
+import InstitucionFactory from './Institucion.js';
+import ContratosFactory from './Contratos.js';
+//import JornadaFactory from './Jornada.js';
+//import UsoIntencionFactory from './UsoIntencion.js';
+//import ReportesFactory from './Reportes.js';
+
+
 
 
 export const Role = RoleFactory(sequelize);
@@ -11,6 +21,18 @@ export const Usuario = UsuarioFactory(sequelize);
 export const Ruta = RutaFactory(sequelize);
 export const RutaCoord = RutaCoordFactory(sequelize);
 export const Parada = ParadaFactory(sequelize);
+export const Conductor = ConductorFactory(sequelize);
+export const Unidad = UnidadFactory(sequelize);
+export const Institucion = InstitucionFactory(sequelize);
+export const Contratos = ContratosFactory(sequelize);
+export const Admin = AdminFactory(sequelize);
+//export const Jornada = JornadaFactory(sequelize);
+//export const UsoIntencion = UsoIntencionFactory(sequelize);
+//export const Reportes = ReportesFactory(sequelize);
+
+//administrador ↔ Institucion (1–1 por UNIQUE id_institucion)
+Institucion.hasOne(Admin, { foreignKey: { name: 'id_institucion', unique: true } });
+Admin.belongsTo(Institucion, { foreignKey: { name: 'id_institucion', unique: true } });
 
 // Roles ↔ Usuarios
 Role.hasMany(Usuario, { foreignKey: { name: 'id_rol', allowNull: false }, onDelete: 'RESTRICT' });
@@ -31,10 +53,17 @@ Usuario.belongsTo(Parada, { foreignKey: { name: 'id_parada', allowNull: true } }
 Ruta.hasMany(Parada, { foreignKey: { name: 'id_ruta', allowNull: false }, as: 'stops', onDelete: 'CASCADE' });
 Parada.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: false } });
 
-// Institucion ↔ Contratos (1–1 por UNIQUE id_institucion)
-//Institucion.hasOne(Contratos, { foreignKey: { name: 'id_institucion', unique: true } });
-//Contratos.belongsTo(Institucion, { foreignKey: { name: 'id_institucion', unique: true } });
+// Ruta ↔ Unidades
+Ruta.hasMany(Unidad, { foreignKey: { name: 'id_ruta', allowNull: true } });
+Unidad.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: true } });
 
+// Institucion ↔ Contratos (1–1 por UNIQUE id_institucion)
+Institucion.hasOne(Contratos, { foreignKey: { name: 'id_institucion', unique: true } });
+Contratos.belongsTo(Institucion, { foreignKey: { name: 'id_institucion', unique: true } });
+
+// Conductores ↔ Contratos (1–1 por UNIQUE id_conductor)
+Conductor.hasOne(Contratos, { foreignKey: { name: 'id_conductor', unique: true } });
+Contratos.belongsTo(Conductor, { foreignKey: { name: 'id_conductor', unique: true } });
 
 // Ruta ↔ Jornada (PK = fecha)
 //Ruta.hasMany(Jornada, { foreignKey: { name: 'id_ruta', allowNull: false } });
@@ -59,6 +88,10 @@ Parada.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: false } });
 // Ruta ↔ Reportes
 //Ruta.hasMany(Reportes, { foreignKey: { name: 'id_ruta', allowNull: false } });
 //Reportes.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: false } });
+
+//Conductores ↔ Unidades
+Unidad.hasOne(Conductor, { foreignKey: { name: 'id_unidad', unique: true } });
+Conductor.belongsTo(Unidad, { foreignKey: { name: 'id_unidad', unique: true } });
 
 export const syncDB = async () => {
 await sequelize.authenticate();

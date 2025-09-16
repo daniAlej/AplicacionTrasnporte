@@ -22,3 +22,14 @@ export const getParadasByRuta = (id) => API.get(`/rutas/${id}/paradas`);
 export const createRuta = (data) => API.post('/rutas', data);
 export const updateRuta = (id, data) => API.put(`/rutas/${id}`, data);
 export const deleteRuta = (id) => API.delete(`/rutas/${id}`);
+
+// Conductores (usa nombre, correo, telefono, licencia, id_unidad?)
+export const getConductores = () => API.get('/conductores');
+export const createConductor = (data) => API.post('/conductores', data);
+export const updateConductor = (id, data) => API.put(`/conductores/${id}`, data);
+export const deleteConductor = (id) => API.delete(`/conductores/${id}`);
+// Unidades (usa placa, modelo, capacidad)
+export const getUnidades = () => API.get('/unidades');
+export const createUnidad = (data) => API.post('/unidades', data);
+export const updateUnidad = (id, data) => API.put(`/unidades/${id}`, data);
+export const deleteUnidad = (id) => API.delete(`/unidades/${id}`);

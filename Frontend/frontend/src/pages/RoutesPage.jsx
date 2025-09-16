@@ -37,10 +37,6 @@ export default function RoutesPage() {
             <h2>Rutas</h2>
             <form onSubmit={onSubmit} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 <input placeholder="Nombre de la ruta" value={form.nombre_ruta} onChange={e => setForm({ ...form, nombre_ruta: e.target.value })} />
-                <select value={form.id_usuario} onChange={e => setForm({ ...form, id_usuario: e.target.value })}>
-                    <option value="">-- Asignar a usuario (opcional) --</option>
-                    {usuarios.map(u => <option key={u.id_usuario} value={u.id_usuario}>{u.nombre} ({u.correo})</option>)}
-                </select>
                 <button type="submit">Guardar Ruta</button>
             </form>
             <MapEditor onCapture={setMapData} />

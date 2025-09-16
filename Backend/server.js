@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 8000;
 (async () => {
   await syncDB();
   // Seed mínimo de roles en tabla Roles (id_rol)
-  for (const nombre of ['admin', 'conductor', 'usuario']) {
+  for (const nombre of ['admin', 'usuario']) {
     await Role.findOrCreate({ where: { nombre }, defaults: { nombre } });
   }
 

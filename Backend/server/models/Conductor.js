@@ -1,9 +1,9 @@
 import { DataTypes, Model } from 'sequelize';
 
 export default (sequelize) => {
-  class Usuario extends Model {}
-  Usuario.init({
-    id_usuario: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  class Conductor extends Model {}
+  Conductor.init({
+    id_conductor: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     nombre: { type: DataTypes.STRING(100), allowNull: false },
     correo: { 
       type: DataTypes.STRING(120), 
@@ -30,25 +30,24 @@ export default (sequelize) => {
         }
       }
     },
+    licencia: { 
+      type: DataTypes.STRING(50), 
+      allowNull: false,  // en tu SQL es NOT NULL
+      unique: true,
+    },
     estado: {
       type: DataTypes.ENUM('activo','inactivo'), // igual que tu SQL
       defaultValue: 'activo',
       allowNull: false
     },
-    ultimo_login: {
-      type: DataTypes.DATE,   // ✅ corregido
-      allowNull: true
-    },
-    id_rol: { type: DataTypes.INTEGER, allowNull: false },
-    id_ruta: { type: DataTypes.INTEGER, allowNull: true },
-    id_parada: { type: DataTypes.INTEGER, allowNull: true },
-    id_intitucion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1 },
+    id_unidad: { type: DataTypes.INTEGER, allowNull: false },
+
   }, {
     sequelize,
-    modelName: 'Usuario',
-    tableName: 'Usuarios',   // igual que en SQL
+    modelName: 'Conductor',
+    tableName: 'Conductores',   // igual que en SQL
     freezeTableName: true,
     timestamps: false
   });
-  return Usuario;
+  return Conductor;
 };
