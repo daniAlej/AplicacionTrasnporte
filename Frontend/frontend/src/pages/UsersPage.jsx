@@ -86,12 +86,14 @@ export default function UsersPage() {
 
   // NUEVO: filtrar usuarios por rol y ruta
   const usuariosFiltrados = useMemo(() => {
-    return usuarios.filter(u => {
+  return usuarios
+    .filter(u => u.estado === 'activo') // 👈 solo activos
+    .filter(u => {
       const matchRol = !filterRol || String(u.id_rol) === String(filterRol);
       const matchRuta = !filterRuta || String(u.id_ruta ?? '') === String(filterRuta);
       return matchRol && matchRuta;
     });
-  }, [usuarios, filterRol, filterRuta]);
+}, [usuarios, filterRol, filterRuta]);
 
   return (
     <div className="container">
@@ -196,7 +198,7 @@ export default function UsersPage() {
               <td>{u.Parada?.nombre_parada || (u.id_parada || '-')}</td>
               <td>
                 <button onClick={() => onEdit(u)}>Editar</button>
-                <button onClick={() => onDelete(u.id_usuario)}>Eliminar</button>
+                <button onClick={() => onDelete(u.id_usuario)}>Desactivar</button>
               </td>
             </tr>
           ))}

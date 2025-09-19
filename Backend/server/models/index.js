@@ -9,9 +9,9 @@ import UnidadFactory from './Unidad.js';
 import AdminFactory from './Administrador.js';
 import InstitucionFactory from './Institucion.js';
 import ContratosFactory from './Contratos.js';
-//import JornadaFactory from './Jornada.js';
-//import UsoIntencionFactory from './UsoIntencion.js';
-//import ReportesFactory from './Reportes.js';
+import JornadaFactory from './Jornada.js';
+import UsoIntencionFactory from './UsoIntencion.js';
+import ReportesFactory from './Reportes.js';
 
 
 
@@ -26,9 +26,9 @@ export const Unidad = UnidadFactory(sequelize);
 export const Institucion = InstitucionFactory(sequelize);
 export const Contratos = ContratosFactory(sequelize);
 export const Admin = AdminFactory(sequelize);
-//export const Jornada = JornadaFactory(sequelize);
-//export const UsoIntencion = UsoIntencionFactory(sequelize);
-//export const Reportes = ReportesFactory(sequelize);
+export const Jornada = JornadaFactory(sequelize);
+export const UsoIntencion = UsoIntencionFactory(sequelize);
+export const Reportes = ReportesFactory(sequelize);
 
 //administrador ↔ Institucion (1–1 por UNIQUE id_institucion)
 Institucion.hasOne(Admin, { foreignKey: { name: 'id_institucion', unique: true } });
@@ -71,24 +71,30 @@ Contratos.belongsTo(Conductor, { foreignKey: { name: 'id_conductor', unique: tru
 
 
 // Jornada(fecha) ↔ UsoIntencion.id_jornada (DATE FK)
-//Jornada.hasMany(UsoIntencion, { foreignKey: { name: 'id_jornada', allowNull: false }, sourceKey: 'fecha' });
-//UsoIntencion.belongsTo(Jornada, { foreignKey: { name: 'id_jornada', allowNull: false }, targetKey: 'fecha' });
+Jornada.hasMany(UsoIntencion, { foreignKey: { name: 'id_jornada', allowNull: false }, sourceKey: 'fecha' });
+UsoIntencion.belongsTo(Jornada, { foreignKey: { name: 'id_jornada', allowNull: false }, targetKey: 'fecha' });
 
 
 // Usuarios ↔ UsoIntencion
-//Usuario.hasMany(UsoIntencion, { foreignKey: { name: 'id_usuario', allowNull: false } });
-//UsoIntencion.belongsTo(Usuario, { foreignKey: { name: 'id_usuario', allowNull: false } });
+Usuario.hasMany(UsoIntencion, { foreignKey: { name: 'id_usuario', allowNull: false } });
+UsoIntencion.belongsTo(Usuario, { foreignKey: { name: 'id_usuario', allowNull: false } });
 
 
 // Unidades ↔ UsoIntencion
-//Unidades.hasMany(UsoIntencion, { foreignKey: { name: 'id_unidad', allowNull: false } });
-//UsoIntencion.belongsTo(Unidades, { foreignKey: { name: 'id_unidad', allowNull: false } });
+Unidad.hasMany(UsoIntencion, { foreignKey: { name: 'id_unidad', allowNull: false } });
+UsoIntencion.belongsTo(Unidad, { foreignKey: { name: 'id_unidad', allowNull: false } });
 
 
 // Ruta ↔ Reportes
-//Ruta.hasMany(Reportes, { foreignKey: { name: 'id_ruta', allowNull: false } });
-//Reportes.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: false } });
+Ruta.hasMany(Reportes, { foreignKey: { name: 'id_ruta', allowNull: false } });
+Reportes.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: false } });
 
+// Usuarios ↔ Reportes
+Usuario.hasMany(Reportes, { foreignKey: { name: 'id_usuario', allowNull: true } });
+Reportes.belongsTo(Usuario, { foreignKey: { name: 'id_usuario', allowNull: true } });
+// Conductores ↔ Reportes
+Conductor.hasMany(Reportes, { foreignKey: { name: 'id_conductor', allowNull: true } });
+Reportes.belongsTo(Conductor, { foreignKey: { name: 'id_conductor', allowNull: true } });
 //Conductores ↔ Unidades
 Unidad.hasOne(Conductor, { foreignKey: { name: 'id_unidad', unique: true } });
 Conductor.belongsTo(Unidad, { foreignKey: { name: 'id_unidad', unique: true } });

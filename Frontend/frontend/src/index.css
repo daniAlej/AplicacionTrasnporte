@@ -28,7 +28,7 @@ body {
 }
 
 .topnav a.active {
-  background: #2563eb;
+  background: #064be1;
   color: white;
 }
 
@@ -45,11 +45,28 @@ body {
 
 .table th,
 .table td {
-  border: 1px solid #e5e7eb;
+  border: 1px solid #000000;
   padding: 8px;
   text-align: left;
 }
-
+button{
+  display: inline-block;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1.2;
+  background-color: #d9e3f0;
+}
+button:hover{
+  background-color: #064be1;
+  color: white;
+}
 
 .map-wrap {
   height: calc(100vh - 56px);

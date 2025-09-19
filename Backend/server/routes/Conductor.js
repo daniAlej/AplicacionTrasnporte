@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { listConductor, createConductor, updateConductor, deleteConductor } from '../controllers/ConductorController.js';
+import { listConductor, createConductor, updateConductor, deleteConductor } from '../controllers/conductorController.js';
 
 
 const router = Router();

@@ -11,9 +11,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -22,6 +24,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -38,5 +41,35 @@
 }
 
 .read-the-docs {
-  color: #888;
+  color: #bf0c0c;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid #0c52de;
+  padding: 8px;
+  text-align: left;
+}
+
+.pill {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  font-size: 12px;
+}
+
+.pill.info {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.pill.ok {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.pill.warn {
+  background: #fffbeb;
+  border-color: #fcd34d;
 }
