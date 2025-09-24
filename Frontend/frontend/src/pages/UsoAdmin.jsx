@@ -27,6 +27,7 @@ export function UsoAdmin() {
     });
 
     useEffect(() => {
+        refetch();
         (async () => {
             try {
                 const [uRes, rRes, jRes] = await Promise.all([getUnidades(), getRutas(), getJornadas().catch(() => ({ data: [] }))]);
@@ -36,10 +37,10 @@ export function UsoAdmin() {
             } catch (e) {
                 console.warn("Catálogos parcial:", e.message);
             }
-            refetch();
+            
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [f.fecha_desde, f.fecha_hasta, f.unidad_id, f.jornada_id, f.search, f.solo_confirmados]);
     const filtered = useMemo(() => {
         return rows.filter(r => {
             // fechas
@@ -124,8 +125,9 @@ export function UsoAdmin() {
                 r.parada_nombre ||
                 r.parada ||
                 "—",
-            ruta: r.Unidad?.Rutum?.nombre_ruta || r.ruta_nombre || r.ruta || "—",
+            ruta: r.Usuario?.Rutum?.nombre_ruta || r.ruta_nombre || r.ruta || "—",
             jornada: r.Jornada?.fecha || r.jornada_nombre || r.jornada || "—",
+            indicado: r.indicado,
             confirmado: isConfirmado(r),
         }));
     }
@@ -152,7 +154,7 @@ export function UsoAdmin() {
     const grouped = useMemo(() => {
         if (!f.agrupar_unidad) return null;
         const m = new Map();
-        for (const r of rows) {
+        for (const r of filtered) {
             const key = r.unidad_id || r.unidad_txt || "(sin unidad)";
             if (!m.has(key)) m.set(key, []);
             m.get(key).push(r);
@@ -197,10 +199,10 @@ export function UsoAdmin() {
                 </div>
 
                 <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <input type="checkbox" checked={f.agrupar_unidad} onChange={(e) => setF({ ...f, agrupar_unidad: e.target.checked })} />
+                    <input type="checkbox"  checked={f.agrupar_unidad} onChange={(e) => setF({ ...f, agrupar_unidad: e.target.checked })} />
                     Agrupar por unidad
                 </label>
-                <button onClick={refetch} disabled={loading}>Filtrar</button>
+
             </div>
 
             {err && <div style={{ color: "#b91c1c", marginBottom: 8 }}>Error: {err}</div>}
@@ -277,6 +279,7 @@ export function UsoAdmin() {
                                 <td>{r.jornada || "—"}</td>
                                 <td>{r.ruta || "—"}</td>
                                 <td>{r.parada || "—"}</td>
+                                
                                 <td>{r.confirmado ? <CheckIcon /> : <XIcon />}</td>
                             </tr>
                         ))}
@@ -297,14 +300,14 @@ export function UsoAdmin() {
 
 function CheckIcon() {
     return (
-        <span className="pill ok" title="Confirmado" aria-label="confirmado" role="img" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <span className="pill ok" title="Confirmado" aria-label="confirmado" role="img" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#2c9c00ff" }}>
             ✓ <small>Confirmado</small>
         </span>
     );
 }
 function XIcon() {
     return (
-        <span className="pill warn" title="Pendiente / No confirmado" aria-label="no confirmado" role="img" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <span className="pill warn" title="Pendiente / No confirmado" aria-label="no confirmado" role="img" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#d14343ff" }}>
             ✗ <small>No confirmado</small>
         </span>
     );

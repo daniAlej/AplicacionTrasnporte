@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo,useRef } from 'react';
 import { getUsuarios, createUsuario, updateUsuario, deleteUsuario, getRoles, getRutas, getParadasByRuta } from '../services/api.js';
 
 export default function UsersPage() {
@@ -43,8 +43,8 @@ export default function UsersPage() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!form.nombre || !form.correo || !form.id_rol || !form.telefono || !form.contrasena) {
-      return alert('Nombre, Correo,  Rol, contraseña y telefono son obligatorios');
+    if (!form.nombre || !form.correo || !form.id_rol || !form.telefono || !form.contrasena || !form.id_ruta || !form.id_parada) {
+      return alert('Nombre, Correo,  Rol, contraseña, telefono, la ruta y la parada son obligatorios');
     }
     const payload = { ...form };
     if (!payload.id_ruta) payload.id_ruta = null;

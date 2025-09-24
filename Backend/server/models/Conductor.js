@@ -8,7 +8,7 @@ export default (sequelize) => {
     correo: { 
       type: DataTypes.STRING(120), 
       allowNull: false, 
-      unique: true,
+      unique: 'correo_unique', // Evita duplicados 
       
     },
     contrasena: { 
@@ -33,7 +33,6 @@ export default (sequelize) => {
     licencia: { 
       type: DataTypes.STRING(50), 
       allowNull: false,  // en tu SQL es NOT NULL
-      unique: true,
     },
     estado: {
       type: DataTypes.ENUM('activo','inactivo'), // igual que tu SQL

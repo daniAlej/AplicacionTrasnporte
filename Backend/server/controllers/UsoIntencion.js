@@ -5,10 +5,9 @@ export const listUsos = async (req, res) => {
     try {
         const data = await UsoIntencion.findAll({ include: [{
             model: Usuario, attributes: ['id_usuario', 'nombre'],
-            include: [{ model: Parada, attributes: ['id_parada', 'nombre_parada'] }]
+            include: [{ model: Parada, attributes: ['id_parada', 'nombre_parada'] },{ model: Ruta, attributes: ['id_ruta', 'nombre_ruta'] }]
         }, {
-            model: Unidad, attributes: ['id_unidad', 'placa', 'id_ruta'],
-            include: [{ model: Ruta, attributes: ['id_ruta', 'nombre_ruta'] }]
+            model: Unidad, attributes: ['id_unidad', 'placa', 'id_ruta']
         }, {
             model: Jornada, attributes: [ 'fecha']
         }], order: [['id_uso', 'DESC']] });

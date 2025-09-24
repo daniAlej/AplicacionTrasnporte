@@ -8,6 +8,7 @@ host: process.env.DB_HOST,
 port: process.env.DB_PORT || 3306,
 dialect: 'mysql',
 logging: false,
+alter: false
 });
 
 

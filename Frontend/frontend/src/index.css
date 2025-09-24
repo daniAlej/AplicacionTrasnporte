@@ -24,7 +24,7 @@ body {
   color: #ddd;
   text-decoration: none;
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 100px;
 }
 
 .topnav a.active {
@@ -46,26 +46,30 @@ body {
 .table th,
 .table td {
   border: 1px solid #000000;
-  padding: 8px;
+  padding: 5px;
   text-align: left;
+  margin-right: 12px;
 }
 button{
   display: inline-block;
   padding: 10px 18px;
   font-size: 14px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 50px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: center;
   text-decoration: none;
   line-height: 1.2;
-  background-color: #d9e3f0;
+  background-color: #3f7ccb;
+  margin: 3px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 button:hover{
   background-color: #064be1;
-  color: white;
+  color: rgb(243, 243, 243);
 }
 
 .map-wrap {
@@ -126,4 +130,51 @@ button:hover{
   padding: 6px 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+/* Cambiar color de fondo de todos los botones de Leaflet Draw */
+.leaflet-draw-toolbar a {
+  background-color: #b9b035 !important; /* verde */
+  border: 1px solid #8e8d38 !important;
+  color: rgb(6, 4, 4) !important;
+}
+
+/* Hover */
+.leaflet-draw-toolbar a:hover {
+  background-color: #4645a0 !important;
+}
+
+/* Íconos (usan pseudo-elementos con background-position en sprite) */
+
+/* Botón de polilínea */
+.leaflet-draw-draw-polyline {
+  background-color: #000000 !important; /* azul */
+}
+
+/* Botón de marcador */
+.leaflet-draw-draw-marker {
+  background-color: #FF5722 !important; /* naranja */
+}
+
+/* Botón de editar */
+.leaflet-draw-edit-edit {
+  background-color: #FFC107 !important; /* amarillo */
+}
+
+/* Botón de borrar */
+.leaflet-draw-edit-remove {
+  background-color: #F44336 !important; /* rojo */
+}
+.leaflet-draw-actions a {
+  background: #728515 !important; /* morado */
+  color: rgb(241, 241, 241) !important;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.leaflet-draw-actions a:hover {
+  background: #178eb2 !important;
+}
+.nav-link.active {
+  background-color: #e10606 !important;
+  color: rgb(1, 153, 64) !important;
 }
