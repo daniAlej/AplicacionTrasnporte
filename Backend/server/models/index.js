@@ -65,14 +65,14 @@ Contratos.belongsTo(Institucion, { foreignKey: { name: 'id_institucion', unique:
 Conductor.hasOne(Contratos, { foreignKey: { name: 'id_conductor', unique: true } });
 Contratos.belongsTo(Conductor, { foreignKey: { name: 'id_conductor', unique: true } });
 
-// Ruta ↔ Jornada (PK = fecha)
-//Ruta.hasMany(Jornada, { foreignKey: { name: 'id_ruta', allowNull: false } });
-//Jornada.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: false } });
+// unidad ↔ Jornada (PK = fecha)
+Unidad.hasMany(Jornada, { foreignKey: { name: 'id_unidad', allowNull: false } });
+Jornada.belongsTo(Unidad, { foreignKey: { name: 'id_unidad', allowNull: false } });
 
 
 // Jornada(fecha) ↔ UsoIntencion.id_jornada (DATE FK)
-Jornada.hasMany(UsoIntencion, { foreignKey: { name: 'id_jornada', allowNull: false }, sourceKey: 'fecha' });
-UsoIntencion.belongsTo(Jornada, { foreignKey: { name: 'id_jornada', allowNull: false }, targetKey: 'fecha' });
+Jornada.hasMany(UsoIntencion, { foreignKey: { name: 'id_jornada', allowNull: false } });
+UsoIntencion.belongsTo(Jornada, { foreignKey: { name: 'id_jornada', allowNull: false } });
 
 
 // Usuarios ↔ UsoIntencion
@@ -81,8 +81,8 @@ UsoIntencion.belongsTo(Usuario, { foreignKey: { name: 'id_usuario', allowNull: f
 
 
 // Unidades ↔ UsoIntencion
-Unidad.hasMany(UsoIntencion, { foreignKey: { name: 'id_unidad', allowNull: false } });
-UsoIntencion.belongsTo(Unidad, { foreignKey: { name: 'id_unidad', allowNull: false } });
+//Unidad.hasMany(UsoIntencion, { foreignKey: { name: 'id_unidad', allowNull: false } });
+//UsoIntencion.belongsTo(Unidad, { foreignKey: { name: 'id_unidad', allowNull: false } });
 
 
 // Ruta ↔ Reportes

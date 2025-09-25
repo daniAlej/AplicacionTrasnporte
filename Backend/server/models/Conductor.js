@@ -34,6 +34,7 @@ export default (sequelize) => {
       type: DataTypes.STRING(50), 
       allowNull: false,  // en tu SQL es NOT NULL
     },
+    licencia_caducidad: { type: DataTypes.DATE, allowNull: false },
     estado: {
       type: DataTypes.ENUM('activo','inactivo'), // igual que tu SQL
       defaultValue: 'activo',

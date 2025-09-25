@@ -12,10 +12,10 @@ export default function UnidadesConductoresPage() {
 
   // Formularios
   const [unidadForm, setUnidadForm] = useState({
-    placa: '', modelo: '', capacidad: '', estado: 'activo', id_ruta: ''
+    placa: '', matricula: '', matricula_caducidad: '', modelo: '', capacidad: '', estado: 'activo', id_ruta: ''
   });
   const [conductorForm, setConductorForm] = useState({
-    nombre: '', licencia: '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: ''
+    nombre: '', licencia: '', licencia_caducidad : '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: ''
   });
 
   const load = async () => {
@@ -51,8 +51,8 @@ export default function UnidadesConductoresPage() {
   // ---- Handlers Unidad ----
   const submitUnidad = async (e) => {
     e.preventDefault();
-    if (!unidadForm.placa || !unidadForm.capacidad) {
-      alert('Placa, Capacidad y Ruta son obligatorios'); return;
+    if (!unidadForm.placa || !unidadForm.capacidad || !unidadForm.matricula || !unidadForm.matricula_caducidad) {
+      alert('Placa, Capacidad , matricula y la fecha de caducidad son obligatorios'); return;
     }
     // Validar que la placa sea única
     const placaExiste = unidades.some(
@@ -62,8 +62,17 @@ export default function UnidadesConductoresPage() {
       alert("La placa ya está registrada 🚨");
       return;
     }
+    const matriculaExiste = unidades.some(
+      (u) => u.matricula.toLowerCase() === unidadForm.matricula.trim().toLowerCase()
+    );
+    if (matriculaExiste && (!editingUnidad || editingUnidad.matricula !== unidadForm.matricula)) {
+      alert("La matricula ya está registrada 🚨");
+      return;
+    }
     const payload = {
       placa: unidadForm.placa.trim(),
+      matricula: unidadForm.matricula.trim() || null,
+      matricula_caducidad: unidadForm.matricula_caducidad || null,
       modelo: unidadForm.modelo.trim() || null,
       capacidad: Number(unidadForm.capacidad),
       estado: unidadForm.estado,
@@ -74,7 +83,7 @@ export default function UnidadesConductoresPage() {
     } else {
       await createUnidad(payload);
     }
-    setUnidadForm({ placa: '', modelo: '', capacidad: '', estado: 'activo', id_ruta: '' });
+    setUnidadForm({ placa: '', matricula: '', matricula_caducidad: '', modelo: '', capacidad: '', estado: 'activo', id_ruta: '' });
     setEditingUnidad(null);
     load();
   };
@@ -82,11 +91,34 @@ export default function UnidadesConductoresPage() {
     setEditingUnidad(u);
     setUnidadForm({
       placa: u.placa,
+      matricula: u.matricula || '',
+      matricula_caducidad: u.matricula_caducidad ? formatUTCDate(u.matricula_caducidad) : '',
       modelo: u.modelo || '',
       capacidad: u.capacidad,
       estado: u.estado,
       id_ruta: u.id_ruta || ''
     });
+  }
+  function formatUTCDate(dateStr) {
+    const date = new Date(dateStr);
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  function isMatriculaCaducada(dateStr) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Ignoramos la hora
+    const fechaCaducidad = new Date(dateStr);
+    fechaCaducidad.setHours(0, 0, 0, 0);
+    return fechaCaducidad < today;
+  }
+  function isLicenciaCaducida(dataStr){
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Ignoramos la hora
+    const fechaCaducidad = new Date(dataStr);
+    fechaCaducidad.setHours(0, 0, 0, 0);
+    return fechaCaducidad < today;
   }
   const removeUnidad = async (id) => {
     const unidad = unidades.find(u => u.id_unidad === id);
@@ -122,6 +154,7 @@ export default function UnidadesConductoresPage() {
     const payload = {
       nombre: conductorForm.nombre.trim(),
       licencia: conductorForm.licencia.trim(),
+      licencia_caducidad: conductorForm.licencia_caducidad.trim(),
       correo: conductorForm.correo.trim(),
       contrasena: conductorForm.contraseña.trim(),
       telefono: conductorForm.telefono?.trim() || null,
@@ -151,7 +184,7 @@ export default function UnidadesConductoresPage() {
       await createConductor(payload);
     }
 
-    setConductorForm({ nombre: '', licencia: '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: '' });
+    setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: '' });
     setEditingConductor(null);
     load();
   };
@@ -161,6 +194,7 @@ export default function UnidadesConductoresPage() {
     setConductorForm({
       nombre: c.nombre,
       licencia: c.licencia,
+      licencia_caducidad: c.licencia_caducidad ? formatUTCDate(c.licencia_caducidad) : '',
       correo: c.correo,
       contraseña: '',
       telefono: c.telefono || '',
@@ -187,6 +221,18 @@ export default function UnidadesConductoresPage() {
             <input id='placa' placeholder="Placa "
               value={unidadForm.placa}
               onChange={e => setUnidadForm({ ...unidadForm, placa: e.target.value })} />
+          </div>
+          <div className='form-group'>
+            <label htmlFor="matricula">Matrícula</label>
+            <input id='matricula' placeholder="Matrícula"
+              value={unidadForm.matricula}
+              onChange={e => setUnidadForm({ ...unidadForm, matricula: e.target.value })} />
+          </div>
+          <div className='form-group'>
+            <label htmlFor="matricula_caducidad">Fecha de Caducidad</label>
+            <input id='matricula_caducidad' type="date"
+              value={unidadForm.matricula_caducidad}
+              onChange={e => setUnidadForm({ ...unidadForm, matricula_caducidad: e.target.value })} />
           </div>
           <div className='form-group'>
             <label htmlFor="modelo">Modelo</label>
@@ -228,7 +274,7 @@ export default function UnidadesConductoresPage() {
           {editingUnidad && (
             <button type="button" onClick={() => {
               setEditingUnidad(null);
-              setUnidadForm({ placa: '', modelo: '', capacidad: '', estado: 'activo', id_ruta: '' });
+              setUnidadForm({ placa: '', matricula: '', matricula_caducidad: '', modelo: '', capacidad: '', estado: 'activo', id_ruta: '' });
             }}>Cancelar</button>
           )}
         </form>
@@ -238,13 +284,22 @@ export default function UnidadesConductoresPage() {
           <h3>Unidades</h3>
           <table className="table">
             <thead>
-              <tr><th>ID</th><th>Placa</th><th>Modelo</th><th>Capacidad</th><th>Estado</th><th>Ruta</th><th>Acciones</th></tr>
+              <tr><th>ID</th><th>Placa</th><th>Matricula</th><th>FechaCaducidad</th><th>Modelo</th><th>Capacidad</th><th>Estado</th><th>Ruta</th><th>Acciones</th></tr>
             </thead>
             <tbody>
               {unidades.map(u => (
                 <tr key={u.id_unidad}>
                   <td>{u.id_unidad}</td>
                   <td>{u.placa}</td>
+                  <td>{u.matricula || '-'}</td>
+                  <td>
+                    {u.matricula_caducidad ? formatUTCDate(u.matricula_caducidad) : '-'}
+                    {u.matricula_caducidad && isMatriculaCaducada(u.matricula_caducidad) && (
+                      <span style={{ color: 'red', marginLeft: '8px', fontWeight: 'bold' }}>
+                        Matricula caducada
+                      </span>
+                    )}
+                  </td>
                   <td>{u.modelo || '-'}</td>
                   <td>{u.capacidad}</td>
                   <td>{u.estado}</td>
@@ -278,6 +333,12 @@ export default function UnidadesConductoresPage() {
             <input id='licencia' placeholder="Licencia *"
               value={conductorForm.licencia}
               onChange={e => setConductorForm({ ...conductorForm, licencia: e.target.value })} />
+          </div>
+          <div className='form-group'>
+              <label htmlFor='licencia_caducidad'>Fecha de Caducidad</label>
+              <input id='licencia_caducidad' type='date'
+                value={conductorForm.licencia_caducidad}
+                onChange={e => setConductorForm({ ...conductorForm, licencia_caducidad: e.target.value })} />
           </div>
           <div className="form-group">
             <label htmlFor="correo">Correo</label>
@@ -328,7 +389,7 @@ export default function UnidadesConductoresPage() {
           {editingConductor && (
             <button type="button" onClick={() => {
               setEditingConductor(null);
-              setConductorForm({ nombre: '', licencia: '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: '' });
+              setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: '' });
             }}>Cancelar</button>
           )}
         </form>
@@ -339,7 +400,7 @@ export default function UnidadesConductoresPage() {
           <h3>Conductores</h3>
           <table className="table">
             <thead>
-              <tr><th>ID</th><th>Nombre</th><th>Licencia</th><th>Teléfono</th><th>Estado</th><th>Unidad</th><th>Ruta</th><th>Acciones</th></tr>
+              <tr><th>ID</th><th>Nombre</th><th>Licencia</th><th>FechaCaducidad</th><th>Teléfono</th><th>Estado</th><th>Unidad</th><th>Ruta</th><th>Acciones</th></tr>
             </thead>
             <tbody>
               {conductores.map(c => {
@@ -351,6 +412,14 @@ export default function UnidadesConductoresPage() {
                     <td>{c.id_conductor}</td>
                     <td>{c.nombre}</td>
                     <td>{c.licencia}</td>
+                    <td>
+                      {c.licencia_caducidad ? formatUTCDate(c.licencia_caducidad) : '-'}
+                      {c.licencia_caducidad && isLicenciaCaducida(c.licencia_caducidad) && (
+                        <span style={{ color: 'red', marginLeft: '8px', fontWeight: 'bold' }}>
+                          Licencia caducida
+                        </span>
+                      )}
+                    </td>
                     <td>{c.telefono || '-'}</td>
                     <td>{c.estado}</td>
                     <td>{unidad ? unidad.placa : c.id_unidad || '-'}</td>

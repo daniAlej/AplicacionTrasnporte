@@ -5,10 +5,12 @@ export default (sequelize) => {
   Unidad.init({
     id_unidad: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     placa: { type: DataTypes.STRING(100), allowNull: false },
+    matricula: { type: DataTypes.STRING(100), allowNull: false },
+    matricula_caducidad: { type: DataTypes.DATE, allowNull: false },
     modelo: { type: DataTypes.STRING(120), allowNull: false },
     capacidad: { type: DataTypes.INTEGER, allowNull: false },
     estado: {
-      type: DataTypes.ENUM('activo','inactivo'), // igual que tu SQL
+      type: DataTypes.ENUM('activo', 'mantenimiento', 'inactivo'), // igual que tu SQL
       defaultValue: 'activo',
       allowNull: false
     },

@@ -4,12 +4,12 @@ import { UsoIntencion, Usuario, Unidad, Jornada, Parada, Ruta } from '../models/
 export const listUsos = async (req, res) => {
     try {
         const data = await UsoIntencion.findAll({ include: [{
-            model: Usuario, attributes: ['id_usuario', 'nombre'],
+            model: Usuario, attributes: ['id_usuario', 'nombre','correo'],
             include: [{ model: Parada, attributes: ['id_parada', 'nombre_parada'] },{ model: Ruta, attributes: ['id_ruta', 'nombre_ruta'] }]
-        }, {
-            model: Unidad, attributes: ['id_unidad', 'placa', 'id_ruta']
-        }, {
-            model: Jornada, attributes: [ 'fecha']
+        },
+         {
+            model: Jornada, attributes: [ 'id_jornada','fecha','id_unidad' ],
+            include: [{ model: Unidad, attributes: ['id_unidad', 'placa'] }]
         }], order: [['id_uso', 'DESC']] });
         res.json(data);
     } catch (e) { res.status(500).json({ error: e.message }); }

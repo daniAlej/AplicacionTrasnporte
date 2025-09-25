@@ -19,7 +19,7 @@ export function UsoAdmin() {
     const [f, setF] = useState({
         unidad_id: "",
         jornada_id: "",
-        fecha_desde: firstOfMonth,
+        fecha_desde: todayISO,
         fecha_hasta: todayISO,
         search: "",
         solo_confirmados: false,
@@ -55,7 +55,7 @@ export function UsoAdmin() {
             if (f.unidad_id && String(r.unidad_id) !== String(f.unidad_id)) return false;
 
             // jornada
-            if (f.jornada_id && String(r.jornada) !== String(f.jornada_id)) return false;
+            //if (f.jornada_id && String(r.jornada) !== String(f.jornada_id)) return false;
 
             // confirmados
             if (f.solo_confirmados && !r.confirmado) return false;
@@ -66,7 +66,6 @@ export function UsoAdmin() {
                 const hay = [
                     r.usuario_nombre,
                     r.usuario_correo,
-                    r.unidad_txt,
                     r.parada,
                     r.ruta,
                     r.id_jornada,
@@ -89,7 +88,6 @@ export function UsoAdmin() {
         setErr("");
         try {
             const params = { ...f };
-            if (!params.unidad_id) delete params.unidad_id;
             if (!params.jornada_id) delete params.jornada_id;
             if (!params.search) delete params.search;
             const { data } = await getUsoIntencion(params);
@@ -114,9 +112,9 @@ export function UsoAdmin() {
     function shapeRows(list) {
         return list.map((r, i) => ({
             _key: r.id_uso || r.id_usointencion || `uso-${i}`,
-            fecha: r.fecha || r.id_jornada || r.createdAt || r.created_at,
-            unidad_id: r.id_unidad ?? r.Unidad?.id_unidad,
-            unidad_txt: r.Unidad?.placa || r.placa || "",
+            fecha: r.Jornada?.fecha || r.fecha || "",
+            unidad_id: r.Jornada?.Unidad?.id_unidad || r.id_unidad || r.unidad_id || "",
+            unidad_txt: r.Jornada?.Unidad?.placa || "",
             usuario_nombre: r.Usuario?.nombre || r.usuario_nombre || r.nombre || "",
             usuario_correo: r.Usuario?.correo || r.usuario_correo || r.correo || "",
             parada:
@@ -126,7 +124,7 @@ export function UsoAdmin() {
                 r.parada ||
                 "—",
             ruta: r.Usuario?.Rutum?.nombre_ruta || r.ruta_nombre || r.ruta || "—",
-            jornada: r.Jornada?.fecha || r.jornada_nombre || r.jornada || "—",
+            //jornada: r.Jornada?.fecha || r.jornada_nombre || r.jornada || "—",
             indicado: r.indicado,
             confirmado: isConfirmado(r),
         }));
@@ -139,7 +137,7 @@ export function UsoAdmin() {
         if (typeof idOrText === "string" && isNaN(Number(idOrText)) && idOrText.includes("-")) return idOrText;
         const u = unidades.find((x) => String(x.id_unidad) === String(idOrText));
         const r = rutas.find((x) => String(x.id_ruta) === String(u?.id_ruta));
-        return u ? (u.alias ? `${u.alias} — ${u.placa} ` : `${u.placa} (${u.Ruta?.nombre_ruta ?? rutaNameById[String(u.id_ruta)] ?? '-'})`) : idOrText;
+        return   `${u.placa} (${u.Ruta?.nombre_ruta ?? rutaNameById[String(u.id_ruta)] ?? '-'})` || "";
     };
 
     // Fecha sin desfase (solo YYYY-MM-DD)
@@ -149,7 +147,12 @@ export function UsoAdmin() {
         if (s.includes("T")) return s.slice(0, 10); // yyyy-mm-dd
         return s;
     }
-
+    function fmtHora(v) {
+        if (!v) return "—";
+        const s = String(v);
+        if (s.includes("T")) return s.slice(11, 16); // HH:MM
+        return s;
+    }
 
     const grouped = useMemo(() => {
         if (!f.agrupar_unidad) return null;
@@ -220,8 +223,8 @@ export function UsoAdmin() {
                                 <thead>
                                     <tr>
                                         <th>Fecha</th>
+                                        <th>HoraInicio</th>
                                         <th>Usuario</th>
-                                        <th>Jornada</th>
                                         <th>Parada</th>
                                         <th>Estado</th>
 
@@ -231,13 +234,13 @@ export function UsoAdmin() {
                                     {items.map((r) => (
                                         <tr key={r._key}>
                                             <td>{fmtFecha(r.fecha)}</td>
+                                            <td>{fmtHora(r.fecha)}</td>
                                             <td>
                                                 <div style={{ display: "grid" }}>
                                                     <strong>{r.usuario_nombre}</strong>
                                                     <small style={{ color: "#6b7280" }}>{r.usuario_correo}</small>
                                                 </div>
                                             </td>
-                                            <td>{r.jornada || "—"}</td>
                                             <td>{r.parada || "—"}</td>
                                             <td>{r.confirmado ? <CheckIcon /> : <XIcon />}</td>
 
@@ -256,9 +259,9 @@ export function UsoAdmin() {
                     <thead>
                         <tr>
                             <th>Fecha</th>
+                            <th>HoraInicio</th>
                             <th>Unidad</th>
                             <th>Usuario</th>
-                            <th>Jornada</th>
                             <th>Ruta</th>
                             <th>Parada</th>
                             <th>Estado</th>
@@ -269,6 +272,7 @@ export function UsoAdmin() {
                         {filtered.map((r) => (
                             <tr key={r._key}>
                                 <td>{fmtFecha(r.fecha)}</td>
+                                <td>{fmtHora(r.fecha)}</td>
                                 <td>{r.unidad_txt || unidadName(r.unidad_id) || "—"}</td>
                                 <td>
                                     <div style={{ display: "grid" }}>
@@ -276,7 +280,6 @@ export function UsoAdmin() {
                                         <small style={{ color: "#6b7280" }}>{r.usuario_correo}</small>
                                     </div>
                                 </td>
-                                <td>{r.jornada || "—"}</td>
                                 <td>{r.ruta || "—"}</td>
                                 <td>{r.parada || "—"}</td>
                                 

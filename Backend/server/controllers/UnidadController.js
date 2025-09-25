@@ -9,7 +9,7 @@ export const listUnidad = async (req, res) => {
 
 export const createUnidad = async (req, res) => {
   try {
-    const { placa, modelo, capacidad, id_ruta = null} = req.body;
+    const { placa, matricula, matricula_caducidad, modelo, capacidad, id_ruta = null} = req.body;
 
     if (!placa || !modelo || !capacidad  ) {
       return res.status(400).json({ error: 'Faltan campos obligatorios' });
@@ -17,7 +17,7 @@ export const createUnidad = async (req, res) => {
 
     
 
-    const u = await Unidad.create({ placa, modelo, capacidad, id_ruta });
+    const u = await Unidad.create({ placa, matricula, matricula_caducidad, modelo, capacidad, id_ruta });
     res.status(201).json(u);
   } catch (e) {
     console.error(e); // 👈 así ves el error exacto en consola backend
@@ -28,7 +28,7 @@ export const createUnidad = async (req, res) => {
 export const updateUnidad = async (req, res) => {
     try {
     const { id } = req.params;
-    const { placa, modelo, capacidad, estado, id_ruta } = req.body;
+    const { placa,matricula,matricula_caducidad, modelo, capacidad, estado, id_ruta } = req.body;
     const u = await Unidad.findByPk(id);
     if (!u) return res.status(404).json({ error: 'Unidad no encontrado' });
     if (id_ruta !== undefined) {
@@ -37,6 +37,8 @@ export const updateUnidad = async (req, res) => {
         u.id_ruta = id_ruta;
     }
     if (placa !== undefined) u.placa = placa;
+    if (matricula !== undefined) u.matricula = matricula;
+    if (matricula_caducidad !== undefined) u.matricula_caducidad = matricula_caducidad;
     if (modelo !== undefined) u.modelo = modelo;
     if (capacidad !== undefined) u.capacidad = capacidad; // TODO: hashear en prod
     if (id_ruta !== undefined) u.id_ruta = id_ruta;
