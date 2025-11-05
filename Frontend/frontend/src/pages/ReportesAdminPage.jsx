@@ -85,6 +85,12 @@ export default function ReportesAdminPage() {
     if (s.includes("T")) return s.slice(0, 10); // yyyy-mm-dd
     return s;
   }
+  function fmtHora(v) {
+        if (!v) return "—";
+        const s = String(v);
+        if (s.includes("T")) return s.slice(11, 16); // HH:MM
+        return s;
+    }
 
   return (
     <div className="container">
@@ -138,11 +144,13 @@ export default function ReportesAdminPage() {
         <thead>
           <tr>
             <th>Fecha</th>
+            <th>Hora</th>
             <th>Ruta</th>
             <th>Unidad</th>
             <th>Tipo</th>
             <th>Detalle</th>
             <th>Reportado por</th>
+            <th>Foto</th>
           </tr>
         </thead>
         <tbody>
@@ -158,6 +166,7 @@ export default function ReportesAdminPage() {
             return (
               <tr key={r.id_reporte}>
                 <td>{fmtFecha(r.fecha)}</td>
+                <td>{fmtHora(r.fecha)}</td>
                 <td>{r.Rutum?.nombre_ruta || "-"}</td>
                 <td>{r.Rutum?.Unidads?.[0]?.placa || "-"}</td>
                 <td><span className="pill info">{r.tipo}</span></td>
@@ -168,6 +177,29 @@ export default function ReportesAdminPage() {
                   {r.descripcion}
                 </td>
                 <td>{reportado}</td>
+                <td>
+                  {r.foto_url ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {/* Vista previa */}
+                      <img
+                        src={r.foto_url}
+                        alt="foto reporte"
+                        style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 6, border: "1px solid #ccc" }}
+                      />
+                      {/* Botón descargar */}
+                      <a
+                        href={r.foto_url}
+                        download={`reporte_${r.id_reporte}.jpg`}
+                        style={{ textAlign: "center", color: "#2563eb", textDecoration: "underline", fontSize: 13 }}
+                      >
+                        Descargar
+                      </a>
+                    </div>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+
               </tr>
             );
           })}

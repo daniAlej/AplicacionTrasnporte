@@ -1,11 +1,13 @@
 import axios from 'axios';
 
 
-export const API = axios.create({ baseURL: 'http://localhost:8000/api' });
+export const API = axios.create({ baseURL: 'http://192.168.5.19:8000/api' });
 
 
 // Roles
 export const getRoles = () => API.get('/roles');
+//roles conductor
+export const getRolesC = () => API.get('/rolesconductor');
 
 
 // Usuarios (usa campos: nombre, correo, contrasena, id_rol, id_ruta?, id_parada?)
@@ -58,4 +60,5 @@ export const deleteJornada = (id) => API.delete(`/jornadas/${id}`);
 export const getUsoIntencion = () => API.get('/usointencion');
 export const createUsoIntencion = (data) => API.post('/usointencion', data);
 export const deleteUsoIntencion = (id) => API.delete(`/usointencion/${id}`);
+
 

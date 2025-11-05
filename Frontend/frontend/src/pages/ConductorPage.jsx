@@ -15,7 +15,7 @@ export default function UnidadesConductoresPage() {
     placa: '', matricula: '', matricula_caducidad: '', modelo: '', capacidad: '', estado: 'activo', id_ruta: ''
   });
   const [conductorForm, setConductorForm] = useState({
-    nombre: '', licencia: '', licencia_caducidad : '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: ''
+    nombre: '', licencia: '', licencia_caducidad: '', correo: '', contrasena: '', telefono: '', estado: 'activo', id_unidad: '', id_rolConductor: 'Principal'
   });
 
   const load = async () => {
@@ -106,6 +106,15 @@ export default function UnidadesConductoresPage() {
     const day = String(date.getUTCDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+  const conductoresPorUnidad = useMemo(() => {
+    const map = {};
+    conductores.forEach(c => {
+      if (!map[c.id_unidad]) map[c.id_unidad] = [];
+      map[c.id_unidad].push(c);
+    });
+    return map;
+  }, [conductores]);
+
   function isMatriculaCaducada(dateStr) {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Ignoramos la hora
@@ -113,7 +122,7 @@ export default function UnidadesConductoresPage() {
     fechaCaducidad.setHours(0, 0, 0, 0);
     return fechaCaducidad < today;
   }
-  function isLicenciaCaducida(dataStr){
+  function isLicenciaCaducida(dataStr) {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Ignoramos la hora
     const fechaCaducidad = new Date(dataStr);
@@ -148,18 +157,41 @@ export default function UnidadesConductoresPage() {
   // ---- Handlers Conductor ----
   const submitConductor = async (e) => {
     e.preventDefault();
-    if (!conductorForm.nombre || !conductorForm.licencia || !conductorForm.id_unidad || !conductorForm.correo || !conductorForm.contraseña) {
+    if (!conductorForm.nombre || !conductorForm.licencia || !conductorForm.id_unidad || !conductorForm.correo || !conductorForm.contrasena) {
       alert('Nombre, Licencia, Unidad, correo y contraseña son obligatorios'); return;
+    }
+    // 🚨 Validar que solo haya un principal por unidad
+    const listaConductores = conductoresPorUnidad[conductorForm.id_unidad] || [];
+    if (conductorForm.id_rolConductor === 'Principal') {
+      const yaPrincipal = listaConductores.some(c => c.id_rolConductor === 1 && (!editingConductor || c.id_conductor !== editingConductor.id_conductor));
+
+      if (yaPrincipal) {
+        alert("Esta unidad ya tiene un conductor principal 🚨");
+        return;
+      }
+
+    }
+    if (conductorForm.id_rolConductor === 'Suplente') {
+      const yaSuplente = listaConductores.some(c => c.id_rolConductor === 2 && (!editingConductor || c.id_conductor !== editingConductor.id_conductor));
+      if (yaSuplente) {
+        alert("Esta unidad  ya tiene un conductor suplente 🚨")
+        return;
+      }
+    }
+    if (!editingConductor && listaConductores.length >= 2) {
+      alert("Esta unidad ya tiene 2 conductores asignados 🚨");
+      return;
     }
     const payload = {
       nombre: conductorForm.nombre.trim(),
       licencia: conductorForm.licencia.trim(),
       licencia_caducidad: conductorForm.licencia_caducidad.trim(),
       correo: conductorForm.correo.trim(),
-      contrasena: conductorForm.contraseña.trim(),
+      contrasena: conductorForm.contrasena.trim(),
       telefono: conductorForm.telefono?.trim() || null,
       estado: conductorForm.estado,
       id_unidad: Number(conductorForm.id_unidad),
+      id_rolConductor: conductorForm.id_rolConductor === 'Principal' ? 1 : 2, // 1=Principal, 2=Suplente
     };
     // Validar licencia única
     const licenciaExiste = conductores.some(
@@ -184,7 +216,7 @@ export default function UnidadesConductoresPage() {
       await createConductor(payload);
     }
 
-    setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: '' });
+    setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contrasena: '', telefono: '', estado: 'activo', id_unidad: '' });
     setEditingConductor(null);
     load();
   };
@@ -196,10 +228,11 @@ export default function UnidadesConductoresPage() {
       licencia: c.licencia,
       licencia_caducidad: c.licencia_caducidad ? formatUTCDate(c.licencia_caducidad) : '',
       correo: c.correo,
-      contraseña: '',
+      contrasena: '',
       telefono: c.telefono || '',
       estado: c.estado,
-      id_unidad: c.id_unidad || ''
+      id_unidad: c.id_unidad || '',
+      id_rolConductor: c.id_rolConductor === 1 ? 'Principal' : 'Suplente'
     });
   }
   const removeConductor = async (id) => {
@@ -207,6 +240,19 @@ export default function UnidadesConductoresPage() {
     await deleteConductor(id);
     load();
   };
+  const conductoresOrdenados = useMemo(() => {
+    return [...conductores].sort((a, b) => {
+      const unidadA = unidades.find(u => u.id_unidad === a.id_unidad);
+      const unidadB = unidades.find(u => u.id_unidad === b.id_unidad);
+      const rutaA = rutas.find(r => r.id_ruta === unidadA?.id_ruta);
+      const rutaB = rutas.find(r => r.id_ruta === unidadB?.id_ruta);
+
+      const nombreRutaA = rutaA?.nombre_ruta || '';
+      const nombreRutaB = rutaB?.nombre_ruta || '';
+
+      return nombreRutaA.localeCompare(nombreRutaB, 'es', { sensitivity: 'base' });
+    });
+  }, [conductores, unidades, rutas]);
 
   return (
     <div className="container" style={{ display: 'grid', gap: 24 }}>
@@ -335,10 +381,10 @@ export default function UnidadesConductoresPage() {
               onChange={e => setConductorForm({ ...conductorForm, licencia: e.target.value })} />
           </div>
           <div className='form-group'>
-              <label htmlFor='licencia_caducidad'>Fecha de Caducidad</label>
-              <input id='licencia_caducidad' type='date'
-                value={conductorForm.licencia_caducidad}
-                onChange={e => setConductorForm({ ...conductorForm, licencia_caducidad: e.target.value })} />
+            <label htmlFor='licencia_caducidad'>Fecha de Caducidad</label>
+            <input id='licencia_caducidad' type='date'
+              value={conductorForm.licencia_caducidad}
+              onChange={e => setConductorForm({ ...conductorForm, licencia_caducidad: e.target.value })} />
           </div>
           <div className="form-group">
             <label htmlFor="correo">Correo</label>
@@ -347,10 +393,10 @@ export default function UnidadesConductoresPage() {
               onChange={e => setConductorForm({ ...conductorForm, correo: e.target.value })} />
           </div>
           <div className="form-group">
-            <label htmlFor="contraseña">Contraseña</label>
-            <input id='contraseña' placeholder="Contraseña *" type="password"
-              value={conductorForm.contraseña}
-              onChange={e => setConductorForm({ ...conductorForm, contraseña: e.target.value })} />
+            <label htmlFor="contrasena">Contraseña</label>
+            <input id='contrasena' placeholder="Contraseña *" type="password"
+              value={conductorForm.contrasena}
+              onChange={e => setConductorForm({ ...conductorForm, contrasena: e.target.value })} />
           </div>
           <div className="form-group">
             <label htmlFor="telefono">Teléfono</label>
@@ -366,6 +412,15 @@ export default function UnidadesConductoresPage() {
               <option value="inactivo">inactivo</option>
             </select>
           </div>
+          <div className="form-group">
+            <label htmlFor="id_rolConductor">Rol</label>
+            <select id="id_rolConductor" value={conductorForm.id_rolConductor}
+              onChange={e => setConductorForm({ ...conductorForm, id_rolConductor: e.target.value })}>
+              <option value="Principal">Principal</option>
+              <option value="Suplente">Suplente</option>
+            </select>
+          </div>
+
 
           <div className="form-group">
             <label htmlFor="id_unidad">Unidad</label>
@@ -375,10 +430,12 @@ export default function UnidadesConductoresPage() {
               {unidades.map(u => {
                 const rutaName = u.Ruta?.nombre_ruta ?? rutaNameById[String(u.id_ruta)] ?? '-';
                 const label = `${u.placa} (${rutaName})`;
-                const ocupada = unidadesOcupadas.has(u.id_unidad);
+                const listaConductores = conductoresPorUnidad[u.id_unidad] || [];
+                const ocupada = listaConductores.length >= 2; // máximo 2
+
                 return (
                   <option key={u.id_unidad} value={u.id_unidad} disabled={ocupada}>
-                    {label}{ocupada ? ' — (asignada)' : ''}
+                    {label}{ocupada ? ' — (2 conductores asignados)' : ''}
                   </option>
                 );
               })}
@@ -389,7 +446,7 @@ export default function UnidadesConductoresPage() {
           {editingConductor && (
             <button type="button" onClick={() => {
               setEditingConductor(null);
-              setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contraseña: '', telefono: '', estado: 'activo', id_unidad: '' });
+              setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contrasena: '', telefono: '', estado: 'activo', id_unidad: '', id_rolConductor: '' });
             }}>Cancelar</button>
           )}
         </form>
@@ -400,17 +457,22 @@ export default function UnidadesConductoresPage() {
           <h3>Conductores</h3>
           <table className="table">
             <thead>
-              <tr><th>ID</th><th>Nombre</th><th>Licencia</th><th>FechaCaducidad</th><th>Teléfono</th><th>Estado</th><th>Unidad</th><th>Ruta</th><th>Acciones</th></tr>
+              <tr><th>ID</th><th>Nombre</th><th>Licencia</th><th>FechaCaducidad</th><th>Teléfono</th><th>Estado</th><th>Rol</th><th>Unidad</th><th>Ruta</th><th>Acciones</th></tr>
             </thead>
             <tbody>
-              {conductores.map(c => {
+              {conductoresOrdenados.map(c => {
                 const unidad = unidades.find(u => u.id_unidad === c.id_unidad);
                 const ruta = rutas.find(r => r.id_ruta === unidad?.id_ruta);
 
                 return (
                   <tr key={c.id_conductor}>
                     <td>{c.id_conductor}</td>
-                    <td>{c.nombre}</td>
+                    <td>
+                      <div style={{ display: "grid" }}>
+                        <stron>{c.nombre}</stron>
+                        <small style={{ color: "#1b2e54ff" }}> {c.correo}</small>
+                      </div>
+                    </td>
                     <td>{c.licencia}</td>
                     <td>
                       {c.licencia_caducidad ? formatUTCDate(c.licencia_caducidad) : '-'}
@@ -422,6 +484,7 @@ export default function UnidadesConductoresPage() {
                     </td>
                     <td>{c.telefono || '-'}</td>
                     <td>{c.estado}</td>
+                    <td>{c.id_rolConductor === 1 ? 'Principal' : 'Suplente'}</td>
                     <td>{unidad ? unidad.placa : c.id_unidad || '-'}</td>
                     <td>{ruta ? ruta.nombre_ruta : '-'}</td>
                     <td>

@@ -12,6 +12,7 @@ import ContratosFactory from './Contratos.js';
 import JornadaFactory from './Jornada.js';
 import UsoIntencionFactory from './UsoIntencion.js';
 import ReportesFactory from './Reportes.js';
+import RolConductorFactory from './RolConductor.js';
 
 
 
@@ -29,6 +30,7 @@ export const Admin = AdminFactory(sequelize);
 export const Jornada = JornadaFactory(sequelize);
 export const UsoIntencion = UsoIntencionFactory(sequelize);
 export const Reportes = ReportesFactory(sequelize);
+export const RolConductor = RolConductorFactory(sequelize);
 
 //administrador ↔ Institucion (1–1 por UNIQUE id_institucion)
 Institucion.hasOne(Admin, { foreignKey: { name: 'id_institucion', unique: true } });
@@ -37,6 +39,14 @@ Admin.belongsTo(Institucion, { foreignKey: { name: 'id_institucion', unique: tru
 // Roles ↔ Usuarios
 Role.hasMany(Usuario, { foreignKey: { name: 'id_rol', allowNull: false }, onDelete: 'RESTRICT' });
 Usuario.belongsTo(Role, { foreignKey: { name: 'id_rol', allowNull: false } });
+
+// RolesConductor ↔ Conductores
+RolConductor.hasMany(Conductor, { foreignKey: { name: 'id_rolConductor', allowNull: false }, onDelete: 'RESTRICT' });
+Conductor.belongsTo(RolConductor, { foreignKey: { name: 'id_rolConductor', allowNull: false } });
+
+//Roles ↔ Conductores
+Role.hasMany(Conductor, { foreignKey: { name: 'id_rol', allowNull: false }, onDelete: 'RESTRICT' });
+Conductor.belongsTo(Role, { foreignKey: { name: 'id_rol', allowNull: false } });
 
 // Ruta ↔ Usuarios (asignación de usuarios a ruta)
 Ruta.hasMany(Usuario, { foreignKey: { name: 'id_ruta', allowNull: true }, as: 'usuarios' });

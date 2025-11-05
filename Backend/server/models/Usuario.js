@@ -8,7 +8,7 @@ export default (sequelize) => {
     correo: { 
       type: DataTypes.STRING(120), 
       allowNull: false, 
-      unique: true,
+      unique: { name: 'unique_correo', msg: 'El correo ya está registrado'  },
       
     },
     contrasena: { 

@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo,useRef } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { getUsuarios, createUsuario, updateUsuario, deleteUsuario, getRoles, getRutas, getParadasByRuta } from '../services/api.js';
 
 export default function UsersPage() {
@@ -12,6 +12,7 @@ export default function UsersPage() {
   // NUEVO: estados de filtro
   const [filterRol, setFilterRol] = useState('');
   const [filterRuta, setFilterRuta] = useState('');
+  const [filterEstado, setFilterEstado] = useState('activo');
 
   const load = async () => {
     const [u, r, ru] = await Promise.all([getUsuarios(), getRoles(), getRutas()]);
@@ -60,6 +61,13 @@ export default function UsersPage() {
     setParadas([]);
     load();
   };
+  const toggleEstado = async (u) => {
+    const nuevoEstado = u.estado === 'activo' ? 'inactivo' : 'activo';
+    if (!confirm(`¿Quieres cambiar a ${nuevoEstado} al usuario ${u.nombre}?`)) return;
+
+    await updateUsuario(u.id_usuario, { ...u, estado: nuevoEstado });
+    load();
+  };
 
   const onEdit = async (u) => {
     setEditing(u);
@@ -86,14 +94,14 @@ export default function UsersPage() {
 
   // NUEVO: filtrar usuarios por rol y ruta
   const usuariosFiltrados = useMemo(() => {
-  return usuarios
-    .filter(u => u.estado === 'activo') // 👈 solo activos
-    .filter(u => {
-      const matchRol = !filterRol || String(u.id_rol) === String(filterRol);
-      const matchRuta = !filterRuta || String(u.id_ruta ?? '') === String(filterRuta);
-      return matchRol && matchRuta;
-    });
-}, [usuarios, filterRol, filterRuta]);
+    return usuarios
+      .filter(u => {
+        const matchRol = !filterRol || String(u.id_rol) === String(filterRol);
+        const matchRuta = !filterRuta || String(u.id_ruta ?? '') === String(filterRuta);
+        const matchEstado = !filterEstado || u.estado === filterEstado;
+        return matchRol && matchRuta && matchEstado;
+      });
+  }, [usuarios, filterRol, filterRuta, filterEstado]);
 
   return (
     <div className="container">
@@ -172,9 +180,14 @@ export default function UsersPage() {
             <option key={r.id_ruta} value={r.id_ruta}>{r.nombre_ruta}</option>
           ))}
         </select>
+        <select value={filterEstado} onChange={e => setFilterEstado(e.target.value)}>
+          <option value="">Todos los estados</option>
+          <option value="activo">Activos</option>
+          <option value="inactivo">Inactivos</option>
+        </select>
 
-        {(filterRol || filterRuta) && (
-          <button type="button" onClick={() => { setFilterRol(''); setFilterRuta(''); }}>
+        {(filterRol || filterRuta || filterEstado) && (
+          <button type="button" onClick={() => { setFilterRol(''); setFilterRuta(''); setFilterEstado('activo'); }}>
             Limpiar filtros
           </button>
         )}
@@ -183,22 +196,30 @@ export default function UsersPage() {
       <table className="table" style={{ marginTop: 12 }}>
         <thead>
           <tr>
-            <th>ID</th><th>Nombre</th><th>Correo</th><th>Telefono</th><th>Rol</th><th>Ruta</th><th>Parada</th><th>Acciones</th>
+            <th>ID</th><th>Nombre</th><th>Telefono</th><th>Rol</th><th>Ruta</th><th>Parada</th><th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {usuariosFiltrados.map(u => (
             <tr key={u.id_usuario}>
               <td>{u.id_usuario}</td>
-              <td>{u.nombre}</td>
-              <td>{u.correo}</td>
+              <td>
+                <div style={{display: "grid"}}>
+                  <stron>{u.nombre}</stron>
+                  <small style={{color: "#6b7280"}}> {u.correo}</small>
+                </div>
+              </td>
               <td>{u.telefono}</td>
               <td>{u.Role?.nombre || roles.find(r => r.id_rol === u.id_rol)?.nombre || u.id_rol}</td>
               <td>{u.Ruta?.nombre_ruta ?? rutaNameById[String(u.id_ruta)] ?? '-'}</td>
               <td>{u.Parada?.nombre_parada || (u.id_parada || '-')}</td>
               <td>
                 <button onClick={() => onEdit(u)}>Editar</button>
-                <button onClick={() => onDelete(u.id_usuario)}>Desactivar</button>
+                <button onClick={() => toggleEstado(u)}>
+                  {u.estado === 'activo' ? 'Desactivar' : 'Activar'}
+                </button>
+
+
               </td>
             </tr>
           ))}

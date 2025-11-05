@@ -3,13 +3,20 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import api from './server/routes/index.js';
 import { syncDB, Role } from './server/models/index.js';
+import path from "path";
+import { fileURLToPath } from 'url';
 
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 dotenv.config();
-
-
 const app = express();
-app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') || '*' }));
+// 🔹 Servir carpeta uploads como estática
+app.use("/uploads", express.static(path.join(__dirname, "server/uploads")));
+
+
+app.use(cors());
+
 app.use(express.json());
 
 
@@ -28,5 +35,5 @@ const PORT = process.env.PORT || 8000;
   }
 
 
-  app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
+  app.listen(PORT, () => console.log(`Servidor en http://192.168.5.19:${PORT}`));
 })();

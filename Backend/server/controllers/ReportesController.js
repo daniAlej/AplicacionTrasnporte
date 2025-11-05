@@ -28,7 +28,8 @@ export const listReportes = async (req, res) => {
             id_usuario: r.Usuario?.id_usuario || null,
             usuario_nombre: r.Usuario?.nombre || null,
             id_conductor: r.Conductor?.id_conductor || null,
-            conductor_nombre: r.Conductor?.nombre || null
+            conductor_nombre: r.Conductor?.nombre || null,
+            foto_url: r.foto_url || null,
         }));
 
         res.json(data);
@@ -40,7 +41,7 @@ export const listReportes = async (req, res) => {
 // Crear un reporte
 export const createReporte = async (req, res) => {
     try {
-        const { tipo, descripcion, id_ruta, id_usuario, id_conductor } = req.body;
+        const { tipo, descripcion, fecha, foto_url, id_ruta, id_usuario, id_conductor } = req.body;
 
         if (!tipo || !id_ruta) {
             return res.status(400).json({ error: 'tipo e id_ruta son obligatorios' });
@@ -51,7 +52,7 @@ export const createReporte = async (req, res) => {
             return res.status(400).json({ error: 'Debe enviarse id_usuario O id_conductor' });
         }
 
-        const nuevo = await Reportes.create({ tipo, descripcion, id_ruta, id_usuario, id_conductor });
+        const nuevo = await Reportes.create({ tipo, descripcion, fecha, foto_url, id_ruta, id_usuario, id_conductor });
         res.status(201).json(nuevo);
     } catch (e) {
         res.status(500).json({ error: e.message });
