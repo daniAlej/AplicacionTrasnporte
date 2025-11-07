@@ -4,6 +4,7 @@ import RoutesPage from './pages/RoutesPage.jsx';
 import ConductorPage from './pages/ConductorPage.jsx';
 import ReportesAdminPage from './pages/ReportesAdminPage.jsx';
 import { UsoAdmin } from './pages/UsoAdmin.jsx';
+import { LocationPage } from './pages/LocationPage.jsx';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <NavLink to="/conductoresUnidades">Conductores-Unidades</NavLink>
         <NavLink to="/reportes">Reportes</NavLink>
         <NavLink to="/UsoDeUnidades">Uso de Unidades</NavLink>
+        <NavLink to="/ubicacion">Ubicación</NavLink>
       </nav>
       <Routes>
         <Route path="/usuarios" element={<UsersPage />} />
@@ -21,6 +23,7 @@ export default function App() {
         <Route path="/conductoresUnidades" element={<ConductorPage/>} />
         <Route path="/reportes" element={<ReportesAdminPage/>} />
         <Route path="/UsoDeUnidades" element={<UsoAdmin/>} />
+        <Route path="/ubicacion" element={<LocationPage />} />
         <Route path="*" element={<UsersPage />} />
       </Routes>
     </div>

@@ -44,6 +44,9 @@ export default (sequelize) => {
       allowNull: false
     },
     id_unidad: { type: DataTypes.INTEGER, allowNull: false },
+    latitud_actual: { type: DataTypes.DECIMAL(10, 8), allowNull: true },
+    longitud_actual: { type: DataTypes.DECIMAL(11, 8), allowNull: true },
+    ultima_actualizacion_ubicacion: { type: DataTypes.DATE, allowNull: true },
 
   }, {
     sequelize,

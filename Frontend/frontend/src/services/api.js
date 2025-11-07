@@ -32,6 +32,12 @@ export const getConductores = () => API.get('/conductores');
 export const createConductor = (data) => API.post('/conductores', data);
 export const updateConductor = (id, data) => API.put(`/conductores/${id}`, data);
 export const deleteConductor = (id) => API.delete(`/conductores/${id}`);
+
+// Ubicaciones
+export const updateConductorLocation = (id, data) => API.post(`/ubicacion/conductor/${id}`, data);
+export const updateUsuarioLocation = (id, data) => API.post(`/ubicacion/usuario/${id}`, data);
+export const getActiveConductorLocations = () => API.get('/conductores/locations/active');
+export const getActiveUserLocations = () => API.get('/ubicacion/usuarios/active');
 // Unidades (usa placa, modelo, capacidad)
 export const getUnidades = () => API.get('/unidades');
 export const createUnidad = (data) => API.post('/unidades', data);
@@ -60,5 +66,3 @@ export const deleteJornada = (id) => API.delete(`/jornadas/${id}`);
 export const getUsoIntencion = () => API.get('/usointencion');
 export const createUsoIntencion = (data) => API.post('/usointencion', data);
 export const deleteUsoIntencion = (id) => API.delete(`/usointencion/${id}`);
-
-

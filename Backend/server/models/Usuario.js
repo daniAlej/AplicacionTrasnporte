@@ -14,7 +14,7 @@ export default (sequelize) => {
     contrasena: { 
       type: DataTypes.STRING(200), 
       allowNull: false,  // en tu SQL es NOT NULL
-      field: 'contraseña' 
+ 
     },
     telefono: { 
       type: DataTypes.STRING(20), 
@@ -43,6 +43,9 @@ export default (sequelize) => {
     id_ruta: { type: DataTypes.INTEGER, allowNull: true },
     id_parada: { type: DataTypes.INTEGER, allowNull: true },
     id_intitucion: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 1 },
+    latitud_actual: { type: DataTypes.DECIMAL(10, 8), allowNull: true },
+    longitud_actual: { type: DataTypes.DECIMAL(11, 8), allowNull: true },
+    ultima_actualizacion_ubicacion: { type: DataTypes.DATE, allowNull: true },
   }, {
     sequelize,
     modelName: 'Usuario',
