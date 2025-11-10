@@ -41,18 +41,24 @@ export const listReportes = async (req, res) => {
 // Crear un reporte
 export const createReporte = async (req, res) => {
     try {
-        const { tipo, descripcion, fecha, foto_url, id_ruta, id_usuario, id_conductor } = req.body;
-
+        const { tipo, descripcion, id_ruta, id_usuario, id_conductor } = req.body;
+        let foto_url = null;
+        if (req.file) {
+            const serverUrl = `${req.protocol}://${req.get('host')}`;
+            foto_url = `${serverUrl}/${req.file.path.replace(/\\/g,'/')}`;
+        }
         if (!tipo || !id_ruta) {
             return res.status(400).json({ error: 'tipo e id_ruta son obligatorios' });
         }
-
+        const fecha = new Date();
+        const timezoneOffset = fecha.getTimezoneOffset() * 60000;
+        const localDate = new Date(fecha.getTime() - timezoneOffset);
         // Validamos que venga solo un origen
         if ((id_usuario && id_conductor) || (!id_usuario && !id_conductor)) {
             return res.status(400).json({ error: 'Debe enviarse id_usuario O id_conductor' });
         }
 
-        const nuevo = await Reportes.create({ tipo, descripcion, fecha, foto_url, id_ruta, id_usuario, id_conductor });
+        const nuevo = await Reportes.create({ tipo, descripcion, id_ruta, id_usuario, id_conductor, foto_url, fecha: localDate || new Date()});
         res.status(201).json(nuevo);
     } catch (e) {
         res.status(500).json({ error: e.message });

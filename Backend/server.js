@@ -14,7 +14,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config();
 const app = express();
 // 🔹 Servir carpeta uploads como estática
-app.use("/uploads", express.static(path.join(__dirname, "server/uploads")));
+//app.use("/uploads", express.static(path.join(__dirname, "server/uploads")));
+app.use('/uploads', express.static('uploads'));
 
 
 app.use(cors());
@@ -62,7 +63,7 @@ io.on('connection', (socket) => {
 (async () => {
   await syncDB();
   // Seed mínimo de roles en tabla Roles (id_rol)
-  for (const nombre of ['admin', 'usuario']) {
+  for (const nombre of ['admin', 'usuario', 'conductor','jefe_recorrido']) {
     await Role.findOrCreate({ where: { nombre }, defaults: { nombre } });
   }
 

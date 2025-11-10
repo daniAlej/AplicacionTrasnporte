@@ -1,5 +1,6 @@
 
 import { Usuario, Role, Ruta, Parada, Conductor, Unidad, RolConductor } from '../models/index.js';
+import { ValidationError } from 'sequelize';
 
 
 export const listConductor = async (req, res) => {
@@ -12,10 +13,6 @@ export const createConductor = async (req, res) => {
   try {
     const { nombre, correo, contrasena, id_unidad = null, telefono, licencia, licencia_caducidad, id_rolConductor } = req.body;
 
-    if (!nombre || !correo || !contrasena || !id_unidad || !telefono || !licencia) {
-      return res.status(400).json({ error: 'Faltan campos obligatorios' });
-    }
-
     const unidad = await Unidad.findByPk(id_unidad);
     if (!unidad) return res.status(400).json({ error: 'Unidad no encontrado' });
 
@@ -23,7 +20,11 @@ export const createConductor = async (req, res) => {
     const { contrasena: _, ...safe } = c.toJSON(); // 👈 quita la contraseña
     res.status(201).json(safe);
   } catch (e) {
-    console.error(e); // 👈 así ves el error exacto en consola backend
+    if (e instanceof ValidationError) {
+      const errors = e.errors.map(err => ({ field: err.path, message: err.message }));
+      return res.status(400).json({ errors });
+    }
+    console.error(e);
     res.status(500).json({ error: e.message });
   }
 };
@@ -52,6 +53,11 @@ export const updateConductor = async (req, res) => {
     await c.save();
     res.json(c);
   } catch (e) {
+    if (e instanceof ValidationError) {
+      const errors = e.errors.map(err => ({ field: err.path, message: err.message }));
+      return res.status(400).json({ errors });
+    }
+    console.error(e);
     res.status(500).json({ error: e.message });
   }
 };

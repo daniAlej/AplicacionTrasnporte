@@ -1,5 +1,9 @@
 import jwt from 'jsonwebtoken';
 
+export function sign(payload) {
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '12h' });
+}
+
 export function signConductor(payload) {
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '12h' });
 }

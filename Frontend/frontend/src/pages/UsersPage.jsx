@@ -8,6 +8,7 @@ export default function UsersPage() {
   const [paradas, setParadas] = useState([]);
   const [form, setForm] = useState({ nombre: '', correo: '', contrasena: '', id_rol: '', telefono: '', id_ruta: '', id_parada: '' });
   const [editing, setEditing] = useState(null);
+  const [formErrors, setFormErrors] = useState({});
 
   // NUEVO: estados de filtro
   const [filterRol, setFilterRol] = useState('');
@@ -44,23 +45,37 @@ export default function UsersPage() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!form.nombre || !form.correo || !form.id_rol || !form.telefono || !form.contrasena || !form.id_ruta || !form.id_parada) {
-      return alert('Nombre, Correo,  Rol, contraseña, telefono, la ruta y la parada son obligatorios');
-    }
+    setFormErrors({}); // Clear previous errors
+
     const payload = { ...form };
     if (!payload.id_ruta) payload.id_ruta = null;
     if (!payload.id_parada) payload.id_parada = null;
 
-    if (editing) {
-      await updateUsuario(editing.id_usuario, form);
-    } else {
-      await createUsuario(form);
+    try {
+      if (editing) {
+        await updateUsuario(editing.id_usuario, payload);
+      } else {
+        await createUsuario(payload);
+      }
+      setForm({ nombre: '', correo: '', contrasena: '', id_rol: '', telefono: '', id_ruta: '', id_parada: '' });
+      setEditing(null);
+      setParadas([]);
+      load();
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        const backendErrors = error.response.data.errors;
+        const errorMap = {};
+        backendErrors.forEach(err => {
+          errorMap[err.field] = err.message;
+        });
+        setFormErrors(errorMap);
+      } else {
+        alert('Ocurrió un error inesperado.');
+        console.error(error);
+      }
     }
-    setForm({ nombre: '', correo: '', contrasena: '', id_rol: '', telefono: '', id_ruta: '', id_parada: '' });
-    setEditing(null);
-    setParadas([]);
-    load();
   };
+
   const toggleEstado = async (u) => {
     const nuevoEstado = u.estado === 'activo' ? 'inactivo' : 'activo';
     if (!confirm(`¿Quieres cambiar a ${nuevoEstado} al usuario ${u.nombre}?`)) return;
@@ -80,6 +95,7 @@ export default function UsersPage() {
       id_ruta: u.id_ruta || '',
       id_parada: u.id_parada || ''
     });
+    setFormErrors({});
 
     if (u.id_ruta) {
       await handleRouteChange(String(u.id_ruta));
@@ -116,6 +132,7 @@ export default function UsersPage() {
         <div className="form-group">
           <label htmlFor='correo'>Correo</label>
           <input id='correo' placeholder="Correo" value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} />
+          {formErrors.correo && <small style={{ color: 'red' }}>{formErrors.correo}</small>}
         </div>
         <div className="form-group">
           <label htmlFor='contrasena'>Contraseña</label>
@@ -124,6 +141,7 @@ export default function UsersPage() {
         <div className="form-group">
           <label htmlFor='telefono'>Telefono</label>
           <input id='telefono' placeholder="telefono" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
+          {formErrors.telefono && <small style={{ color: 'red' }}>{formErrors.telefono}</small>}
         </div>
         <div className="form-group">
           <label htmlFor='id_rol'>Rol</label>
@@ -156,6 +174,7 @@ export default function UsersPage() {
               setEditing(null);
               setForm({ nombre: '', correo: '', contrasena: '', id_rol: '', telefono: '', id_ruta: '', id_parada: '' });
               setParadas([]);
+              setFormErrors({});
             }}
           >
             Cancelar

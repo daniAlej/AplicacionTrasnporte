@@ -11,6 +11,7 @@ import UsoIntecion from './UsoIntencion.js';
 import Reportes from './Reportes.js';
 import rolesConductor from './rolesConductor.js';
 import authConductorRoute from './authConductorRoute.js';
+import authUsuarioRoute from './authUsuarioRoute.js';
 import Ubicacion from './Ubicacion.js';
 
 
@@ -27,6 +28,7 @@ api.use('/usointencion', UsoIntecion);
 api.use('/reportes', Reportes);
 api.use('/rolesconductor', rolesConductor);
 api.use('/auth', authConductorRoute);
+api.use('/auth', authUsuarioRoute);
 api.use('/ubicacion', Ubicacion);
 
 

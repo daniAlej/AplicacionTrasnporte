@@ -37,6 +37,9 @@ export const LocationPage = () => {
 
         } catch (error) {
           console.error("Error refreshing driver location:", error);
+          setActiveDrivers([]);
+          setSelectedDriver(null);
+          setRoute(null);
         }
       }, 5000); // Refresh every 5 seconds
     }

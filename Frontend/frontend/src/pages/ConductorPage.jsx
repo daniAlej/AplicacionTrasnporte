@@ -8,7 +8,7 @@ export default function UnidadesConductoresPage() {
   const [conductores, setConductores] = useState([]);
   const [editingConductor, setEditingConductor] = useState(null);
   const [editingUnidad, setEditingUnidad] = useState(null);
-
+  const [formErrors, setFormErrors] = useState({});
 
   // Formularios
   const [unidadForm, setUnidadForm] = useState({
@@ -160,6 +160,7 @@ export default function UnidadesConductoresPage() {
     if (!conductorForm.nombre || !conductorForm.licencia || !conductorForm.id_unidad || !conductorForm.correo || !conductorForm.contrasena) {
       alert('Nombre, Licencia, Unidad, correo y contraseña son obligatorios'); return;
     }
+    setFormErrors({});
     // 🚨 Validar que solo haya un principal por unidad
     const listaConductores = conductoresPorUnidad[conductorForm.id_unidad] || [];
     if (conductorForm.id_rolConductor === 'Principal') {
@@ -209,16 +210,31 @@ export default function UnidadesConductoresPage() {
       alert("El correo ya está registrado 🚨");
       return;
     }
-    if (editingConductor) {
-      await updateConductor(editingConductor.id_conductor, payload);
+    try {
+      if (editingConductor) {
+        await updateConductor(editingConductor.id_conductor, payload);
+        setEditingConductor(null);
+      } else {
+        await createConductor(payload);
+      }
+
+      setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contrasena: '', telefono: '', estado: 'activo', id_unidad: '' });
       setEditingConductor(null);
-    } else {
-      await createConductor(payload);
+      load();
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        const backendErrors = error.response.data.errors;
+        const errorMap = {};
+        backendErrors.forEach(err => {
+          errorMap[err.field] = err.message;
+        });
+        setFormErrors(errorMap);
+      } else {
+        alert('Ocurrió un error inesperado.');
+        console.error(error);
+      }
     }
 
-    setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contrasena: '', telefono: '', estado: 'activo', id_unidad: '' });
-    setEditingConductor(null);
-    load();
   };
 
   const onEditConductor = async (c) => {
@@ -234,6 +250,7 @@ export default function UnidadesConductoresPage() {
       id_unidad: c.id_unidad || '',
       id_rolConductor: c.id_rolConductor === 1 ? 'Principal' : 'Suplente'
     });
+    setFormErrors({});
   }
   const removeConductor = async (id) => {
     if (!confirm('¿Eliminar conductor?')) return;
@@ -391,6 +408,7 @@ export default function UnidadesConductoresPage() {
             <input id='correo' placeholder="Correo *" type="email"
               value={conductorForm.correo}
               onChange={e => setConductorForm({ ...conductorForm, correo: e.target.value })} />
+              {formErrors.correo && <small style={{ color: 'red' }}>{formErrors.correo}</small>}
           </div>
           <div className="form-group">
             <label htmlFor="contrasena">Contraseña</label>
@@ -403,6 +421,7 @@ export default function UnidadesConductoresPage() {
             <input id='telefono' placeholder="Teléfono"
               value={conductorForm.telefono}
               onChange={e => setConductorForm({ ...conductorForm, telefono: e.target.value })} />
+              {formErrors.telefono && <small style={{ color: 'red' }}>{formErrors.telefono}</small>}
           </div>
           <div className="form-group">
             <label htmlFor="estado">Estado</label>
@@ -447,6 +466,7 @@ export default function UnidadesConductoresPage() {
             <button type="button" onClick={() => {
               setEditingConductor(null);
               setConductorForm({ nombre: '', licencia: '', licencia_caducidad: '', correo: '', contrasena: '', telefono: '', estado: 'activo', id_unidad: '', id_rolConductor: '' });
+              setFormErrors({});
             }}>Cancelar</button>
           )}
         </form>

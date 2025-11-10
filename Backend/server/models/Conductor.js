@@ -10,7 +10,11 @@ export default (sequelize) => {
       type: DataTypes.STRING(120),
       allowNull: false,
       unique: 'correo_unique', // Evita duplicados 
-
+      validate: {
+        isEmail: {
+          msg: "El correo no es válido"
+        }
+      }
     },
     contrasena: {
       type: DataTypes.STRING(200),
@@ -28,8 +32,8 @@ export default (sequelize) => {
           args: true
         },
         len: {
-          args: [7, 10],
-          msg: "El número telefónico debe tener entre 7 y 10 caracteres"
+          args: [10],
+          msg: "El número telefónico debe tener entre  10 caracteres"
         }
       }
     },
