@@ -6,7 +6,8 @@ import sequelize from '../db.js';
 export async function loginUsuario(req, res) {
   try {
     const { correo, contrasena } = req.body;
-
+    let nombre_ruta = null;
+    let nombre_parada = null;
     const usuario = await Usuario.findOne({
       where: { correo, estado: 'activo' }
     });
@@ -22,11 +23,26 @@ export async function loginUsuario(req, res) {
     if (Number(usuario.id_rol) !== 2) {
       return res.status(403).json({ error: 'No es un conductor válido' });
     }
-  
+    if (usuario.id_ruta){
+      const [rows] = await sequelize.query(
+        'select nombre_ruta from ruta join usuarios on usuarios.id_ruta = ruta.id_ruta where ruta.id_ruta = ? limit 1',
+        { replacements: [usuario.id_ruta] }
+      )
+      nombre_ruta = rows?.[0]?.nombre_ruta ?? null;
+    }
+    if (usuario.id_parada){
+      const [rows] = await sequelize.query(
+        'select nombre_parada from parada join usuarios on usuarios.id_parada = parada.id_parada where parada.id_parada = 1 limit 1',
+        { replacements: [usuario.id_parada] }
+      )
+      nombre_parada = rows?.[0]?.nombre_parada ?? null;
+    }
     const token = sign({
       role: 'usuario',
       id_usuario: usuario.id_usuario,
       id_ruta: usuario.id_ruta,
+      nombre_ruta,
+      nombre_parada,
       id_parada: usuario.id_parada,
       id_rol: usuario.id_rol
     });
@@ -38,6 +54,8 @@ export async function loginUsuario(req, res) {
         nombre: usuario.nombre,
         correo: usuario.correo,
         id_ruta: usuario.id_ruta,
+        nombre_ruta,
+        nombre_parada,
         id_parada: usuario.id_parada,
       }
     });

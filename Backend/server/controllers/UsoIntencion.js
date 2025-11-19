@@ -17,8 +17,8 @@ export const listUsos = async (req, res) => {
 
 export const createUso = async (req, res) => {
     try {
-        const { id_usuario, id_unidad, id_jornada, indicado = null, confirmado = false } = req.body; // id_jornada = 'YYYY-MM-DD'
-        const u = await UsoIntencion.create({ id_usuario, id_unidad, id_jornada, indicado, confirmado });
+        const { id_usuario,  id_jornada, indicado = true, confirmado = false } = req.body; // id_jornada = 'YYYY-MM-DD'
+        const u = await UsoIntencion.create({ id_usuario, id_jornada, indicado, confirmado });
         res.status(201).json(u);
     } catch (e) { res.status(500).json({ error: e.message }); }
 };

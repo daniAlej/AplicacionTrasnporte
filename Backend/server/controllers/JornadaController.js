@@ -1,9 +1,9 @@
 
-import { Jornada, Ruta } from '../models/index.js';
+import { Jornada, Ruta, Unidad } from '../models/index.js';
 
 export const listJornadas = async (req, res) => {
     try {
-        const data = await Jornada.findAll({ include: [], order: [['fecha', 'DESC']] });
+        const data = await Jornada.findAll({ include: [{model: Unidad, attributes: ['id_ruta']}], order: [['fecha', 'DESC']] });
         res.json(data);
     } catch (e) { res.status(500).json({ error: e.message }); }
 };
