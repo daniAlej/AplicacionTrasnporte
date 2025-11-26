@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-export const API = axios.create({ baseURL: 'http://192.168.5.19:8000/api' });
+export const API = axios.create({ baseURL: 'http://192.168.5.113:8000/api' });
 
 
 // Roles
@@ -45,7 +45,7 @@ export const updateUnidad = (id, data) => API.put(`/unidades/${id}`, data);
 export const deleteUnidad = (id) => API.delete(`/unidades/${id}`);
 //reportes (usa tipo, descripcion, id_ruta)
 export const getReportes = () => API.get('/reportes');
-export const createReporte = (data) => API.post('/reportes', data); 
+export const createReporte = (data) => API.post('/reportes', data);
 export const deleteReporte = (id) => API.delete(`/reportes/${id}`);
 // Instituciones (usa nombre, direccion, telefono)
 export const getInstituciones = () => API.get('/instituciones');

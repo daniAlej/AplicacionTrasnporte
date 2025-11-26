@@ -86,12 +86,23 @@ export default function ReportesAdminPage() {
     return s;
   }
   function fmtHora(v) {
-        if (!v) return "—";
-        const s = String(v);
-        if (s.includes("T")) return s.slice(11, 16); // HH:MM
-        return s;
-    }
-
+    if (!v) return "—";
+    const s = String(v);
+    if (s.includes("T")) return s.slice(11, 16); // HH:MM
+    return s;
+  }
+  function fmtLatitud(v) {
+    if (!v) return "—";
+    return Number(v).toFixed(6);
+  }
+  function fmtLongitud(v) {
+    if (!v) return "—";
+    return Number(v).toFixed(6);
+  }
+  function fmtLatitudLongitud(v) {
+    if (!v) return "—";
+    return `${Number(v.latitud).toFixed(6)}, ${Number(v.longitud).toFixed(6)}`;
+  }
   return (
     <div className="container">
       <h2>Reportes de Unidades</h2>
@@ -150,6 +161,7 @@ export default function ReportesAdminPage() {
             <th>Tipo</th>
             <th>Detalle</th>
             <th>Reportado por</th>
+            <th>Lugar</th>
             <th>Foto</th>
           </tr>
         </thead>
@@ -177,6 +189,21 @@ export default function ReportesAdminPage() {
                   {r.descripcion}
                 </td>
                 <td>{reportado}</td>
+                <td>
+                  {r.latitud && r.longitud ? (
+                    <a
+                      href={`https://www.google.com/maps?q=${r.latitud},${r.longitud}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: "#2563eb", textDecoration: "underline" }}
+                      title={`${fmtLatitud(r.latitud)}, ${fmtLongitud(r.longitud)}`}
+                    >
+                      Ver en mapa
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </td>
                 <td>
                   {r.foto_url ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>

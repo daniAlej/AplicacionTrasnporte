@@ -63,9 +63,9 @@ io.on('connection', (socket) => {
 (async () => {
   await syncDB();
   // Seed mínimo de roles en tabla Roles (id_rol)
-  for (const nombre of ['admin', 'usuario', 'conductor','jefe_recorrido']) {
+  for (const nombre of ['admin', 'usuario', 'conductor', 'jefe_recorrido']) {
     await Role.findOrCreate({ where: { nombre }, defaults: { nombre } });
   }
 
-  server.listen(PORT, () => console.log(`Servidor en http://192.168.5.19:${PORT}`));
+  server.listen(PORT, () => console.log(`Servidor en http://192.168.5.113:${PORT}`));
 })();

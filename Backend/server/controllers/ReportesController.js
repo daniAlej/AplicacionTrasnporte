@@ -3,7 +3,7 @@ import { Reportes, Ruta, Usuario, Conductor, Unidad } from '../models/index.js';
 // Listar todos los reportes con info de ruta y quién lo generó
 export const listReportes = async (req, res) => {
     try {
-        
+
         const data = await Reportes.findAll({
             include: [
                 {
@@ -41,11 +41,11 @@ export const listReportes = async (req, res) => {
 // Crear un reporte
 export const createReporte = async (req, res) => {
     try {
-        const { tipo, descripcion, id_ruta, id_usuario, id_conductor } = req.body;
+        const { tipo, descripcion, id_ruta, id_usuario, id_conductor, latitud, longitud } = req.body;
         let foto_url = null;
         if (req.file) {
             const serverUrl = `${req.protocol}://${req.get('host')}`;
-            foto_url = `${serverUrl}/${req.file.path.replace(/\\/g,'/')}`;
+            foto_url = `${serverUrl}/${req.file.path.replace(/\\/g, '/')}`;
         }
         if (!tipo || !id_ruta) {
             return res.status(400).json({ error: 'tipo e id_ruta son obligatorios' });
@@ -58,7 +58,7 @@ export const createReporte = async (req, res) => {
             return res.status(400).json({ error: 'Debe enviarse id_usuario O id_conductor' });
         }
 
-        const nuevo = await Reportes.create({ tipo, descripcion, id_ruta, id_usuario, id_conductor, foto_url, fecha: localDate || new Date()});
+        const nuevo = await Reportes.create({ tipo, descripcion, id_ruta, id_usuario, id_conductor, foto_url, fecha: localDate || new Date(), latitud, longitud });
         res.status(201).json(nuevo);
     } catch (e) {
         res.status(500).json({ error: e.message });
