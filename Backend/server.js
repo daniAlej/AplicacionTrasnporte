@@ -67,5 +67,5 @@ io.on('connection', (socket) => {
     await Role.findOrCreate({ where: { nombre }, defaults: { nombre } });
   }
 
-  server.listen(PORT, () => console.log(`Servidor en http://192.168.5.113:${PORT}`));
+  server.listen(PORT, () => console.log(`Servidor en http://192.168.5.48:${PORT}`));
 })();

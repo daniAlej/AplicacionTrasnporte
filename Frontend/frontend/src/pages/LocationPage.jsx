@@ -12,6 +12,7 @@ export const LocationPage = () => {
     try {
       const response = await getActiveConductorLocations();
       setActiveDrivers(response.data);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching active drivers:", error);
     } finally {
@@ -30,7 +31,9 @@ export const LocationPage = () => {
         try {
           const response = await getActiveConductorLocations();
           setActiveDrivers(response.data);
+          console.log(response.data);
           const updatedDriver = response.data.find(d => d.id_conductor === selectedDriver.id_conductor);
+          console.log(updatedDriver);
           if (updatedDriver) {
             setSelectedDriver(updatedDriver);
           }

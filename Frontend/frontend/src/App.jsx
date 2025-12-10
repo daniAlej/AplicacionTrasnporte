@@ -1,5 +1,6 @@
 import { Routes, Route, NavLink } from 'react-router-dom';
 import UsersPage from './pages/UsersPage.jsx';
+import MiviajePage from './pages/MiviajePage.jsx';
 import RoutesPage from './pages/RoutesPage.jsx';
 import ConductorPage from './pages/ConductorPage.jsx';
 import ReportesAdminPage from './pages/ReportesAdminPage.jsx';
@@ -16,13 +17,15 @@ export default function App() {
         <NavLink to="/reportes">Reportes</NavLink>
         <NavLink to="/UsoDeUnidades">Uso de Unidades</NavLink>
         <NavLink to="/ubicacion">Ubicación</NavLink>
+        <NavLink to="/mi-viaje">Mi Viaje</NavLink>
       </nav>
       <Routes>
         <Route path="/usuarios" element={<UsersPage />} />
+        <Route path="/mi-viaje" element={<MiviajePage />} />
         <Route path="/rutas" element={<RoutesPage />} />
-        <Route path="/conductoresUnidades" element={<ConductorPage/>} />
-        <Route path="/reportes" element={<ReportesAdminPage/>} />
-        <Route path="/UsoDeUnidades" element={<UsoAdmin/>} />
+        <Route path="/conductoresUnidades" element={<ConductorPage />} />
+        <Route path="/reportes" element={<ReportesAdminPage />} />
+        <Route path="/UsoDeUnidades" element={<UsoAdmin />} />
         <Route path="/ubicacion" element={<LocationPage />} />
         <Route path="*" element={<UsersPage />} />
       </Routes>

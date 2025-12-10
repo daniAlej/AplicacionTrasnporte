@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-export const API = axios.create({ baseURL: 'http://192.168.5.113:8000/api' });
+export const API = axios.create({ baseURL: 'http://192.168.5.48:8000/api' });
 
 
 // Roles

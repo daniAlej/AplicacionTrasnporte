@@ -13,7 +13,7 @@ import JornadaFactory from './Jornada.js';
 import UsoIntencionFactory from './UsoIntencion.js';
 import ReportesFactory from './Reportes.js';
 import RolConductorFactory from './RolConductor.js';
-
+import ParadaVisitaFactory from './ParadaVisita.js';
 
 
 
@@ -31,6 +31,7 @@ export const Jornada = JornadaFactory(sequelize);
 export const UsoIntencion = UsoIntencionFactory(sequelize);
 export const Reportes = ReportesFactory(sequelize);
 export const RolConductor = RolConductorFactory(sequelize);
+export const ParadaVisita = ParadaVisitaFactory(sequelize);
 
 //administrador ↔ Institucion (1–1 por UNIQUE id_institucion)
 Institucion.hasOne(Admin, { foreignKey: { name: 'id_institucion', unique: true } });
@@ -53,7 +54,7 @@ Ruta.hasMany(Usuario, { foreignKey: { name: 'id_ruta', allowNull: true }, as: 'u
 Usuario.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: true } });
 
 // Ruta ↔ rutacoord (asignación de usuarios a ruta)
-Ruta.hasMany(RutaCoord, {foreignKey: { name: 'id_ruta', allowNull: true}, as:'coords'});
+Ruta.hasMany(RutaCoord, { foreignKey: { name: 'id_ruta', allowNull: true }, as: 'coords' });
 RutaCoord.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: true } });
 // Parada ↔ Usuarios (usuarios con parada asignada)
 Parada.hasMany(Usuario, { foreignKey: { name: 'id_parada', allowNull: true } });
@@ -105,11 +106,32 @@ Reportes.belongsTo(Usuario, { foreignKey: { name: 'id_usuario', allowNull: true 
 // Conductores ↔ Reportes
 Conductor.hasMany(Reportes, { foreignKey: { name: 'id_conductor', allowNull: true } });
 Reportes.belongsTo(Conductor, { foreignKey: { name: 'id_conductor', allowNull: true } });
+
 //Conductores ↔ Unidades
 Unidad.hasOne(Conductor, { foreignKey: { name: 'id_unidad', unique: true } });
 Conductor.belongsTo(Unidad, { foreignKey: { name: 'id_unidad', unique: true } });
 
+// ParadaVisita ↔ Jornada
+Jornada.hasMany(ParadaVisita, { foreignKey: { name: 'id_jornada', allowNull: false }, onDelete: 'CASCADE' });
+ParadaVisita.belongsTo(Jornada, { foreignKey: { name: 'id_jornada', allowNull: false } });
+
+// ParadaVisita ↔ Parada
+Parada.hasMany(ParadaVisita, { foreignKey: { name: 'id_parada', allowNull: false } });
+ParadaVisita.belongsTo(Parada, { foreignKey: { name: 'id_parada', allowNull: false } });
+
+// ParadaVisita ↔ Conductor
+Conductor.hasMany(ParadaVisita, { foreignKey: { name: 'id_conductor', allowNull: false } });
+ParadaVisita.belongsTo(Conductor, { foreignKey: { name: 'id_conductor', allowNull: false } });
+
+// Jornada ↔ Conductor
+Conductor.hasMany(Jornada, { foreignKey: { name: 'id_conductor', allowNull: true } });
+Jornada.belongsTo(Conductor, { foreignKey: { name: 'id_conductor', allowNull: true } });
+
+// Jornada ↔ Ruta
+Ruta.hasMany(Jornada, { foreignKey: { name: 'id_ruta', allowNull: true } });
+Jornada.belongsTo(Ruta, { foreignKey: { name: 'id_ruta', allowNull: true } });
+
 export const syncDB = async () => {
-await sequelize.authenticate();
-await sequelize.sync({ alter: true });
+    await sequelize.authenticate();
+    await sequelize.sync({ alter: true });
 };
