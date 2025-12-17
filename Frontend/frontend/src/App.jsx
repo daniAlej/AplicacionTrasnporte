@@ -17,11 +17,11 @@ export default function App() {
         <NavLink to="/reportes">Reportes</NavLink>
         <NavLink to="/UsoDeUnidades">Uso de Unidades</NavLink>
         <NavLink to="/ubicacion">Ubicación</NavLink>
-        <NavLink to="/mi-viaje">Mi Viaje</NavLink>
+
       </nav>
       <Routes>
         <Route path="/usuarios" element={<UsersPage />} />
-        <Route path="/mi-viaje" element={<MiviajePage />} />
+
         <Route path="/rutas" element={<RoutesPage />} />
         <Route path="/conductoresUnidades" element={<ConductorPage />} />
         <Route path="/reportes" element={<ReportesAdminPage />} />

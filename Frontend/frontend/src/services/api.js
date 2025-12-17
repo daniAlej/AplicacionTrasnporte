@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-export const API = axios.create({ baseURL: 'http://192.168.5.48:8000/api' });
+export const API = axios.create({ baseURL: 'http://192.168.5.16:8000/api' });
 
 
 // Roles
@@ -65,4 +65,20 @@ export const deleteJornada = (id) => API.delete(`/jornadas/${id}`);
 // usoIntencion (usa id_usuario, id_ruta, fecha, hora)
 export const getUsoIntencion = () => API.get('/usointencion');
 export const createUsoIntencion = (data) => API.post('/usointencion', data);
+export const updateUsoIntencion = (id, data) => API.put(`/usointencion/${id}`, data);
 export const deleteUsoIntencion = (id) => API.delete(`/usointencion/${id}`);
+
+// Verificación de proximidad
+export const verificarProximidadUnidad = (conductorToken, ubicacion) =>
+    API.post('/usointencion/verificar-proximidad-unidad', ubicacion, {
+        headers: { Authorization: `Bearer ${conductorToken}` }
+    });
+
+export const verificarProximidadUsuario = (idUsuario, ubicacion) =>
+    API.post(`/usointencion/verificar-proximidad-usuario/${idUsuario}`, ubicacion);
+
+export const getUsosConProximidad = (idUsuario, latitud, longitud) =>
+    API.get(`/usointencion/con-proximidad/${idUsuario}`, {
+        params: { latitud, longitud }
+    });
+

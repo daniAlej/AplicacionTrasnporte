@@ -56,8 +56,27 @@ export const updateUso = async (req, res) => {
     try {
         const u = await UsoIntencion.findByPk(req.params.id);
         if (!u) return res.status(404).json({ error: 'UsoIntencion no encontrado' });
+
+        // Verificar si se está confirmando el uso (de false a true)
+        const seEstaConfirmando = !u.confirmado && req.body.confirmado === true;
+
         Object.assign(u, req.body);
         await u.save();
+
+        // Si se confirmó el uso, actualizar paradas_completadas en la jornada
+        if (seEstaConfirmando && u.id_jornada) {
+            try {
+                const jornada = await Jornada.findByPk(u.id_jornada);
+                if (jornada) {
+                    jornada.paradas_completadas = (jornada.paradas_completadas || 0) + 1;
+                    await jornada.save();
+                    console.log(`✅ [updateUso] Jornada ${u.id_jornada} actualizada: paradas_completadas = ${jornada.paradas_completadas}/${jornada.paradas_totales}`);
+                }
+            } catch (err) {
+                console.error('❌ Error al actualizar paradas_completadas en updateUso:', err);
+            }
+        }
+
         res.json(u);
     } catch (e) { res.status(500).json({ error: e.message }); }
 };
@@ -268,6 +287,18 @@ export const verificarProximidadUsuario = async (req, res) => {
             await uso.save();
             confirmado = true;
             mensaje = 'Uso confirmado automáticamente. ¡Estás muy cerca de la unidad!';
+
+            // Actualizar el contador de paradas completadas en la jornada
+            try {
+                const jornada = await Jornada.findByPk(id_jornada);
+                if (jornada) {
+                    jornada.paradas_completadas = (jornada.paradas_completadas || 0) + 1;
+                    await jornada.save();
+                    console.log(`✅ Jornada ${id_jornada} actualizada: paradas_completadas = ${jornada.paradas_completadas}/${jornada.paradas_totales}`);
+                }
+            } catch (err) {
+                console.error('❌ Error al actualizar paradas_completadas:', err);
+            }
 
             // Emitir evento de confirmación por WebSocket
             if (req.io) {
