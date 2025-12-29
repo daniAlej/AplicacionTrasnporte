@@ -121,7 +121,7 @@ export default function UsersPage() {
 
   return (
     <div className="container">
-      <h2>Usuarios</h2>
+      <h2>👥 Gestión de Usuarios</h2>
 
       {/* Formulario de creación/edición */}
       <form onSubmit={onSubmit} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -131,16 +131,16 @@ export default function UsersPage() {
         </div>
         <div className="form-group">
           <label htmlFor='correo'>Correo</label>
-          <input id='correo' placeholder="Correo" value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} />
+          <input id='correo' type="email" placeholder="Correo" value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} />
           {formErrors.correo && <small style={{ color: 'red' }}>{formErrors.correo}</small>}
         </div>
         <div className="form-group">
           <label htmlFor='contrasena'>Contraseña</label>
-          <input id='contrasena' placeholder="Contraseña" value={form.contrasena} onChange={e => setForm({ ...form, contrasena: e.target.value })} />
+          <input id='contrasena' type="password" placeholder="Contraseña" value={form.contrasena} onChange={e => setForm({ ...form, contrasena: e.target.value })} />
         </div>
         <div className="form-group">
-          <label htmlFor='telefono'>Telefono</label>
-          <input id='telefono' placeholder="telefono" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
+          <label htmlFor='telefono'>Teléfono</label>
+          <input id='telefono' placeholder="Teléfono" value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
           {formErrors.telefono && <small style={{ color: 'red' }}>{formErrors.telefono}</small>}
         </div>
         <div className="form-group">
@@ -148,12 +148,12 @@ export default function UsersPage() {
           <select id='id_rol' value={form.id_rol} onChange={e => setForm({ ...form, id_rol: e.target.value })}>
             <option value="">-- Rol --</option>
             {roles.map(r => <option key={r.id_rol} value={r.id_rol}>{r.nombre}</option>)}
-          </select >
+          </select>
         </div>
         <div className="form-group">
           <label htmlFor='id_ruta'>Ruta</label>
           <select id='id_ruta' value={form.id_ruta} onChange={e => handleRouteChange(e.target.value)}>
-            <option value="">-- Rutas --</option>
+            <option value="">-- Ruta --</option>
             {rutas.map(r => <option key={r.id_ruta} value={r.id_ruta}>{r.nombre_ruta}</option>)}
           </select>
         </div>
@@ -164,7 +164,6 @@ export default function UsersPage() {
             {paradas.map(p => <option key={p.id_parada} value={p.id_parada}>{p.nombre_parada}</option>)}
           </select>
         </div>
-
 
         <button type="submit">{editing ? 'Actualizar' : 'Crear'}</button>
         {editing && (
@@ -183,60 +182,91 @@ export default function UsersPage() {
       </form>
 
       {/* NUEVO: Controles de filtro */}
-
-      <div style={{ marginTop: 16, display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-        <strong>Filtrar:</strong>
-        <select value={filterRol} onChange={e => setFilterRol(e.target.value)}>
-          <option value="">Todos los roles</option>
+      <div style={{
+        marginTop: 24,
+        padding: '20px',
+        background: 'var(--bg-secondary)',
+        borderRadius: 'var(--border-radius-lg)',
+        boxShadow: 'var(--shadow-md)',
+        display: 'flex',
+        gap: 16,
+        alignItems: 'center',
+        flexWrap: 'wrap'
+      }}>
+        <strong style={{ color: 'var(--text-primary)', fontSize: '14px', fontWeight: 600 }}>🔍 Filtrar por:</strong>
+        <select value={filterRol} onChange={e => setFilterRol(e.target.value)} style={{ flex: '1 1 200px' }}>
+          <option value="">📋 Todos los roles</option>
           {roles.map(r => (
             <option key={r.id_rol} value={r.id_rol}>{r.nombre}</option>
           ))}
         </select>
 
-        <select value={filterRuta} onChange={e => setFilterRuta(e.target.value)}>
-          <option value="">Todas las rutas</option>
+        <select value={filterRuta} onChange={e => setFilterRuta(e.target.value)} style={{ flex: '1 1 200px' }}>
+          <option value="">🚌 Todas las rutas</option>
           {rutas.map(r => (
             <option key={r.id_ruta} value={r.id_ruta}>{r.nombre_ruta}</option>
           ))}
         </select>
-        <select value={filterEstado} onChange={e => setFilterEstado(e.target.value)}>
-          <option value="">Todos los estados</option>
-          <option value="activo">Activos</option>
-          <option value="inactivo">Inactivos</option>
+        <select value={filterEstado} onChange={e => setFilterEstado(e.target.value)} style={{ flex: '1 1 200px' }}>
+          <option value="">🔘 Todos los estados</option>
+          <option value="activo">✅ Activos</option>
+          <option value="inactivo">⛔ Inactivos</option>
         </select>
 
         {(filterRol || filterRuta || filterEstado) && (
-          <button type="button" onClick={() => { setFilterRol(''); setFilterRuta(''); setFilterEstado('activo'); }}>
-            Limpiar filtros
+          <button type="button" className="secondary" onClick={() => { setFilterRol(''); setFilterRuta(''); setFilterEstado('activo'); }}>
+            🔄 Limpiar filtros
           </button>
         )}
       </div>
-      <h3>Lista de Usuarios ({usuariosFiltrados.length})</h3>
+
+      <h3 style={{ marginTop: 32, marginBottom: 16 }}>
+        📊 Lista de Usuarios
+        <span className="pill info" style={{ marginLeft: 12 }}>{usuariosFiltrados.length} usuarios</span>
+      </h3>
+
       <table className="table" style={{ marginTop: 12 }}>
         <thead>
           <tr>
-            <th>ID</th><th>Nombre</th><th>Telefono</th><th>Rol</th><th>Ruta</th><th>Parada</th><th>Acciones</th>
+            <th>ID</th><th>Nombre</th><th>Teléfono</th><th>Rol</th><th>Ruta</th><th>Parada</th><th>Estado</th><th style={{ textAlign: 'center' }}>Acciones</th>
           </tr>
         </thead>
         <tbody>
           {usuariosFiltrados.map(u => (
             <tr key={u.id_usuario}>
-              <td>{u.id_usuario}</td>
+              <td><strong>#{u.id_usuario}</strong></td>
               <td>
-                <div style={{display: "grid"}}>
-                  <stron>{u.nombre}</stron>
-                  <small style={{color: "#6b7280"}}> {u.correo}</small>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>{u.nombre}</strong>
+                  <small style={{ color: 'var(--text-tertiary)', fontSize: '12px' }}>📧 {u.correo}</small>
                 </div>
               </td>
-              <td>{u.telefono}</td>
-              <td>{u.Role?.nombre || roles.find(r => r.id_rol === u.id_rol)?.nombre || u.id_rol}</td>
+              <td>
+                <span style={{ color: 'var(--text-secondary)' }}>📱 {u.telefono || '-'}</span>
+              </td>
+              <td>
+                <span className="pill neutral">
+                  {u.Role?.nombre || roles.find(r => r.id_rol === u.id_rol)?.nombre || u.id_rol}
+                </span>
+              </td>
               <td>{u.Ruta?.nombre_ruta ?? rutaNameById[String(u.id_ruta)] ?? '-'}</td>
               <td>{u.Parada?.nombre_parada || (u.id_parada || '-')}</td>
               <td>
-                <button onClick={() => onEdit(u)}>Editar</button>
-                <button onClick={() => toggleEstado(u)}>
-                  {u.estado === 'activo' ? 'Desactivar' : 'Activar'}
-                </button>
+                <span className={`pill ${u.estado === 'activo' ? 'success' : 'danger'}`}>
+                  {u.estado === 'activo' ? '✅ Activo' : '⛔ Inactivo'}
+                </span>
+              </td>
+              <td style={{ textAlign: 'center' }}>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                  <button onClick={() => onEdit(u)} style={{ fontSize: '13px' }}>✏️ Editar</button>
+                  <button
+                    onClick={() => toggleEstado(u)}
+                    className={u.estado === 'activo' ? 'warning' : 'success'}
+                    style={{ fontSize: '13px' }}
+                  >
+                    {u.estado === 'activo' ? '⏸️ Desactivar' : '▶️ Activar'}
+                  </button>
+                </div>
 
 
               </td>
@@ -244,7 +274,15 @@ export default function UsersPage() {
           ))}
           {usuariosFiltrados.length === 0 && (
             <tr>
-              <td colSpan={8} style={{ textAlign: 'center', opacity: 0.7 }}>No hay usuarios para el filtro seleccionado.</td>
+              <td colSpan={8} style={{ textAlign: 'center', padding: '48px', color: 'var(--text-tertiary)' }}>
+                <div className="empty-state">
+                  <div className="empty-state-icon">🔍</div>
+                  <div className="empty-state-title">No hay usuarios</div>
+                  <div className="empty-state-description">
+                    No se encontraron usuarios con los filtros seleccionados.
+                  </div>
+                </div>
+              </td>
             </tr>
           )}
         </tbody>

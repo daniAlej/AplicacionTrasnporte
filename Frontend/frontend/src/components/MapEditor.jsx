@@ -27,33 +27,33 @@ function DrawTools({ onCapture, initialCoords = [], initialStops = [], fitOnInit
   // 1) Montaje: crear FeatureGroup, controles y listeners SOLO UNA VEZ
   useEffect(() => {
     // Sobrescribir textos de Leaflet Draw
-L.drawLocal.draw.toolbar.actions = {
-  title: 'Cancelar dibujo',
-  text: 'Cancelar'
-};
-L.drawLocal.draw.toolbar.finish = {
-  title: 'Guardar dibujo',
-  text: 'Guardar ruta'
-};
-L.drawLocal.draw.toolbar.undo = {
-  title: 'Eliminar último punto',
-  text: 'Deshacer'
-};
+    L.drawLocal.draw.toolbar.actions = {
+      title: 'Cancelar dibujo',
+      text: 'Cancelar'
+    };
+    L.drawLocal.draw.toolbar.finish = {
+      title: 'Guardar dibujo',
+      text: 'Guardar ruta'
+    };
+    L.drawLocal.draw.toolbar.undo = {
+      title: 'Eliminar último punto',
+      text: 'Deshacer'
+    };
 
-L.drawLocal.edit.toolbar.actions = {
-  save: {
-    title: 'Guardar cambios',
-    text: 'Guardar'
-  },
-  cancel: {
-    title: 'Cancelar edición',
-    text: 'Cancelar'
-  },
-  clearAll: {
-    title: 'Eliminar todo',
-    text: 'Borrar todo'
-  }
-};
+    L.drawLocal.edit.toolbar.actions = {
+      save: {
+        title: 'Guardar cambios',
+        text: 'Guardar'
+      },
+      cancel: {
+        title: 'Cancelar edición',
+        text: 'Cancelar'
+      },
+      clearAll: {
+        title: 'Eliminar todo',
+        text: 'Borrar todo'
+      }
+    };
 
     const drawnItems = new L.FeatureGroup();
     drawnItemsRef.current = drawnItems;
@@ -119,7 +119,7 @@ L.drawLocal.edit.toolbar.actions = {
     captureBtn.onAdd = () => {
       const button = L.DomUtil.create("button", "btn-capture");
       button.innerHTML = "📍 Capturar Ruta";
-      button.style.background = "white";
+      button.style.background = "#be0707ff";
       button.style.padding = "6px 10px";
       button.style.border = "1px solid #ddd";
       button.style.borderRadius = "8px";

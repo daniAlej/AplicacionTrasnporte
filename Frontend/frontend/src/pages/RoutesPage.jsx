@@ -95,50 +95,41 @@ export default function RoutesPage() {
 
     return (
         <div className="container">
-            <h2>Rutas</h2>
+            <h2>🗺️ Gestión de Rutas</h2>
 
-            <form onSubmit={onSubmit} style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                <input
-                    placeholder="Nombre de la ruta"
-                    value={form.nombre_ruta}
-                    onChange={e => setForm({ ...form, nombre_ruta: e.target.value })}
-                />
-
-                {/* (Opcional) reasignar usuario desde aquí
-        <select
-          value={form.id_usuario}
-          onChange={(e) => setForm({ ...form, id_usuario: e.target.value })}
-        >
-          <option value="">-- (Opcional) Asignar usuario --</option>
-          {usuarios.map(u => (
-            <option key={u.id_usuario} value={u.id_usuario}>
-              {u.nombre} ({u.correo})
-            </option>
-          ))}
-        </select>
-        */}
-
-                <button type="submit" disabled={loading}>
-                    {editing ? `Guardar cambios (Ruta #${editing.id_ruta})` : 'Guardar nueva Ruta'}
-                </button>
+            <form onSubmit={onSubmit}>
+                <div className="form-row">
+                    <div className="form-group" style={{ flex: 1 }}>
+                        <label htmlFor="nombre_ruta">Nombre de la Ruta</label>
+                        <input
+                            id="nombre_ruta"
+                            placeholder="Ej: Ruta Central 1"
+                            value={form.nombre_ruta}
+                            onChange={e => setForm({ ...form, nombre_ruta: e.target.value })}
+                        />
+                    </div>
+                </div>
 
                 {editing && (
-                    <button type="button" onClick={resetAll}>
-                        Cancelar
-                    </button>
+                    <div className="alert info" style={{ marginBottom: 16 }}>
+                        <strong>💡 Consejo:</strong> Dibuja o edita en el mapa y luego pulsa <strong>📍 Capturar Ruta</strong> para actualizar los datos antes de guardar.
+                    </div>
                 )}
-                {/* Tip UX */}
-                <p style={{ marginTop: 8 }} disabled={loading}>
-                    <small><b>{editing ? 'Tip:' : ''}</b> {editing ? 'Dibuja o edita en el mapa y luego pulsa': ''} <em>{editing? '📍 Capturar Ruta': ''}</em> {editing? 'para actualizar los datos antes de guardar.': ''} </small>
-                </p>
+
+                <div className="form-actions">
+                    {editing && (
+                        <button type="button" className="secondary" onClick={resetAll}>
+                            ❌ Cancelar
+                        </button>
+                    )}
+                    <button type="submit" disabled={loading}>
+                        {editing ? `💾 Actualizar Ruta #${editing.id_ruta}` : '✨ Crear Nueva Ruta'}
+                    </button>
+                </div>
             </form>
 
-            <div style={{ marginTop: 10 }}>
-                {/* IMPORTANTE:
-           - key fuerza remount del mapa al entrar/salir de edición (evita residuos de capas)
-           - initial* precargan polyline y paradas al editar
-           - onCapture actualiza mapData cuando haces clic en "📍 Capturar Ruta" dentro del mapa
-        */}
+            <div style={{ marginTop: 24, background: 'var(--bg-secondary)', borderRadius: 'var(--border-radius-lg)', padding: 16, boxShadow: 'var(--shadow-md)' }}>
+                <h3 style={{ marginTop: 0, marginBottom: 16 }}>🗺️ Editor de Mapa</h3>
                 <MapEditor
                     key={editing?.id_ruta || 'new'}
                     initialCoords={editing ? mapData.coords : []}
@@ -149,36 +140,69 @@ export default function RoutesPage() {
                 />
             </div>
 
-            <h3 style={{ marginTop: 16 }}>Rutas existentes</h3>
+            <h3 style={{ marginTop: 32, marginBottom: 16 }}>
+                📊 Rutas Registradas
+                <span className="pill info" style={{ marginLeft: 12 }}>{rutas.length} rutas</span>
+            </h3>
+
             <table className="table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Nombre</th>
-                        <th>Usuarios asignados</th>
-                        <th>#Coords</th>
-                        <th>#Paradas</th>
-                        <th>Acciones</th>
+                        <th>Usuarios</th>
+                        <th>Coordenadas</th>
+                        <th>Paradas</th>
+                        <th style={{ textAlign: 'center' }}>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {rutas.map(r => (
                         <tr key={r.id_ruta}>
-                            <td>{r.id_ruta}</td>
-                            <td>{r.nombre_ruta}</td>
-                            <td>{Array.isArray(r.usuarios) ? r.usuarios.length : 0}</td>
-                            <td>{r.coords?.length || 0}</td>
-                            <td>{r.stops?.length || 0}</td>
-                            <td style={{ display: 'flex', gap: 8 }}>
-                                <button onClick={() => onEdit(r)}>Editar</button>
-                                <button onClick={() => onDelete(r.id_ruta)}>Eliminar</button>
+                            <td><strong>#{r.id_ruta}</strong></td>
+                            <td>
+                                <strong style={{ color: 'var(--text-primary)' }}>🚌 {r.nombre_ruta}</strong>
+                            </td>
+                            <td>
+                                <span className="pill neutral">
+                                    👥 {Array.isArray(r.usuarios) ? r.usuarios.length : 0}
+                                </span>
+                            </td>
+                            <td>
+                                <span className="pill info">
+                                    📍 {r.coords?.length || 0} puntos
+                                </span>
+                            </td>
+                            <td>
+                                <span className="pill success">
+                                    🚏 {r.stops?.length || 0} paradas
+                                </span>
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                                <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                                    <button onClick={() => onEdit(r)} style={{ fontSize: '13px' }}>✏️ Editar</button>
+                                    <button onClick={() => onDelete(r.id_ruta)} className="danger" style={{ fontSize: '13px' }}>🗑️ Eliminar</button>
+                                </div>
                             </td>
                         </tr>
                     ))}
+                    {rutas.length === 0 && (
+                        <tr>
+                            <td colSpan={6} style={{ textAlign: 'center', padding: '48px' }}>
+                                <div className="empty-state">
+                                    <div className="empty-state-icon">🗺️</div>
+                                    <div className="empty-state-title">No hay rutas registradas</div>
+                                    <div className="empty-state-description">
+                                        Crea tu primera ruta usando el editor de mapa.
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
 
-            
+
         </div>
     );
 }
